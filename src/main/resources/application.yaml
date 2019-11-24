@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost:5432/postgres"
+    username: "postgres"
+    password: "admin"
+    initialization-mode: always
+    schema: "classpath:/schema.sql"
+server:
+  port: 8082
