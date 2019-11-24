@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class PokemonResource(
-        val pokemonDao: PokemonDao
+        private val pokemonDao: PokemonDao
 ) {
 
     @GetMapping("/pokemon")

@@ -7,3 +7,5 @@ spring:
     schema: "classpath:/schema.sql"
 server:
   port: 8082
+maps:
+  apiKey: "AIzaSyDAyURyzuAi38Am-nkzYCAao52ZhEWDu10"

@@ -22,9 +22,13 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test") {
 		exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
 	}
-	compile("org.springframework.boot:spring-boot-starter-web")
-	compile("org.springframework.boot:spring-boot-starter-jdbc")
-	compile("org.postgresql:postgresql")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-jdbc")
+	implementation("org.postgresql:postgresql")
+	implementation("com.google.maps:google-maps-services:0.10.1")
+	// implementation("org.slf4j:slf4j-simple:1.7.25") {
+	//	exclude("logback-classic")
+	//}
 }
 
 tasks.withType<Test> {
