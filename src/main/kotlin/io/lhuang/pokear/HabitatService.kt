@@ -10,7 +10,8 @@ import java.util.*
 class HabitatService {
 
     companion object {
-        const val OCEAN_THRESHOLD = 500
+        const val LAKE_THRESHOLD = 3000
+        const val OCEAN_THRESHOLD = 20000
         const val SHORT_DISTANCE = 50
         val CARDINALS: Array<Position> = arrayOf(
                 Position(1, 0),
@@ -23,14 +24,15 @@ class HabitatService {
     fun calculateHabitat(latLng: LatLng, map: BufferedImage): Habitat? {
         val terrain = getTerrain(map)
         if (terrain == Terrain.WATER) {
-            if (isOcean(map)) {
+            val waterBodyType = waterBodyType(map);
+            if (waterBodyType == Habitat.OCEAN) {
                 if (isCloseTo(map) { t -> t != Terrain.WATER }) {
                     return Habitat.SHORE
                 } else {
                     return Habitat.OCEAN
                 }
             } else {
-                return Habitat.POND
+                return waterBodyType
             }
         } else if (terrain == Terrain.GRASS) {
             if (isNearby(latLng, "garden")) {
@@ -57,7 +59,7 @@ class HabitatService {
         }
     }
 
-    private fun isOcean(map: BufferedImage): Boolean {
+    private fun waterBodyType(map: BufferedImage): Habitat {
         val seen: MutableSet<Position> = HashSet()
         val queue: Queue<Position> = LinkedList()
         queue.offer(Position(map.width / 2, map.height / 2))
@@ -80,7 +82,13 @@ class HabitatService {
             }
         }
 
-        return seen.size >= OCEAN_THRESHOLD
+        if (seen.size >= OCEAN_THRESHOLD) {
+            return Habitat.OCEAN
+        } else if (seen.size > LAKE_THRESHOLD) {
+            return Habitat.LAKE
+        } else {
+            return Habitat.POND
+        }
     }
 
     private fun isCloseTo(map: BufferedImage, terrainType: (Terrain?) -> Boolean): Boolean {

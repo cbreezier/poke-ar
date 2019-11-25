@@ -7,6 +7,7 @@ enum class Habitat(val description: String) {
     URBAN("Road or man-made"),
     CITY("Road or man-made with businesses nearby"),
     POND("Water - small amount"),
+    LAKE("Water - medium amount"),
     OCEAN("Water - large amount"),
     SHORE("Ocean with land nearby"),
     SAND("Sand"),
