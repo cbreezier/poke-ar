@@ -8,7 +8,7 @@ enum class Terrain(val type: String, val color: Color) {
     WATER("water", Color(0xAADAFF)),
     MANMADE("manmade", Color(0xF2F3F4)),
     ROAD("road", Color(0xFFFFFF)),
-    SAND("sand", Color(0xE8FBD9));
+    SAND("sand", Color(0xFAF2C7));
 
     companion object {
         fun fromColor(color: Color): Terrain? {

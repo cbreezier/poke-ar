@@ -34,7 +34,9 @@ class MapService {
                 .center(latLng)
                 .zoom(16)
                 .format(StaticMapsRequest.ImageFormat.png)
-                .custom("style", "feature:all|element:labels|visibility:off&style=feature:all|element:geometry|visibility:simplified")
+                .custom("style", "feature:all|element:labels|visibility:off")
+                // Currently the Java api doesn't support multiple custom styles :fistshake:
+                //.custom("style", "feature:all|element:geometry|visibility:simplified")
                 .await()
 
         val image = ImageIO.read(ByteArrayInputStream(imageResult.imageData))
