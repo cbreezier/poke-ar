@@ -9,6 +9,7 @@ import com.google.maps.model.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.awt.Color
+import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
@@ -28,21 +29,16 @@ class MapService {
         }
     }
 
-    fun getMap(latLng: LatLng): ImageResult {
-        return StaticMapsApi.newRequest(apiContext.value, Size(512, 512))
+    fun getMap(latLng: LatLng): BufferedImage {
+        val imageResult = StaticMapsApi.newRequest(apiContext.value, Size(512, 512))
                 .center(latLng)
                 .zoom(16)
                 .format(StaticMapsRequest.ImageFormat.png)
                 .custom("style", "feature:all|element:labels|visibility:off&style=feature:all|element:geometry|visibility:simplified")
                 .await()
 
-    }
+        val image = ImageIO.read(ByteArrayInputStream(imageResult.imageData))
 
-    fun getTerrain(latLng: LatLng): Terrain? {
-        val image = ImageIO.read(ByteArrayInputStream(getMap(latLng).imageData))
-
-        val pixel = Color(image.getRGB(image.width / 2, image.height / 2))
-
-        return Terrain.fromColor(pixel)
+        return image
     }
 }

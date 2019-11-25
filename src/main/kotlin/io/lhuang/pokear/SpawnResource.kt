@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class SpawnResource(
-        private val mapService: MapService
+        private val mapService: MapService,
+        private val habitatService: HabitatService
 ) {
 
     @GetMapping("/terrain")
@@ -15,8 +16,12 @@ class SpawnResource(
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
     ): Location {
-        val terrain = mapService.getTerrain(LatLng(latitude, longitude))
+        val latLng = LatLng(latitude, longitude)
+        val map = mapService.getMap(latLng)
 
-        return Location(latitude, longitude, terrain)
+        val terrain = habitatService.getTerrain(map)
+        val habitat = habitatService.calculateHabitat(latLng, map)
+
+        return Location(latitude, longitude, terrain, habitat)
     }
 }
