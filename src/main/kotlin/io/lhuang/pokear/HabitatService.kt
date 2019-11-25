@@ -48,7 +48,9 @@ class HabitatService {
             }
         } else if (terrain == Terrain.FOREST) {
             return Habitat.FOREST
-        } else if (terrain == Terrain.MANMADE || terrain == Terrain.ROAD) {
+        } else if (terrain == Terrain.ROAD) {
+            return Habitat.ROAD
+        } else if (terrain == Terrain.MANMADE) {
             if (isNearby(latLng, "restaurant")) {
                 return Habitat.CITY
             } else {
