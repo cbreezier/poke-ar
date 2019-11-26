@@ -73,7 +73,7 @@
               infoWindow.setContent(formattedContent);
             }
           };
-          xmlHttp.open("GET", "http://localhost:8082/spawnInfo?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
+          xmlHttp.open("GET", "../spawnInfo?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
           xmlHttp.send(null);
 
           // get existing spawns
@@ -98,14 +98,14 @@
               var marker = new google.maps.Marker({
                 position: {lat: spawn.latitude, lng: spawn.longitude},
                 map: map,
-                icon: 'http://localhost:8082/sprites/' + spawn.pokemon.id + '.png'
+                icon: '/sprites/' + spawn.pokemon.id + '.png'
                 //label: spawn.pokemon.name
               });
               spawnMarkers.push(marker);
             });
           }
         };
-        xmlHttp.open("GET", "http://localhost:8082/spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.open("GET", "../spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
         xmlHttp.send(null);
       }
 
@@ -118,7 +118,7 @@
             renderSpawns(latitude, longitude);
           }
         };
-        xmlHttp.open("POST", "http://localhost:8082/spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.open("POST", "../spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
         xmlHttp.send(null);
       }
     </script>
