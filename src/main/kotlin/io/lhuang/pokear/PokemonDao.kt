@@ -15,6 +15,10 @@ class PokemonDao(
     }
 
     fun getPokemonSpawns(habitat: Habitat): List<PokemonSpawnStats> {
+        if (habitat == Habitat.EMPTY) {
+            return emptyList()
+        }
+
         return jdbcTemplate.query(
                 """
                     SELECT

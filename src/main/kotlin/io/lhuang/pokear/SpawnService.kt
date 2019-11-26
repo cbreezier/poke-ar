@@ -31,6 +31,10 @@ class SpawnService(
     }
 
     private fun <T> weightedRandomBy(inputs: List<T>, by: (T) -> Double): T? {
+        if (inputs.isEmpty()) {
+            return null
+        }
+
         val total = inputs.fold(0.0, { acc, input -> acc + by.invoke(input) } )
         val diceRoll = Random.nextDouble(total)
 
