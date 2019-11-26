@@ -136,7 +136,7 @@ class HabitatService {
     }
 
     private fun isCloseTo(map: BufferedImage, terrainType: (Terrain?) -> Boolean): Boolean {
-        return countTiles(map, SHORT_DISTANCE, terrainType) < SHORT_DISTANCE
+        return countTiles(map, SHORT_DISTANCE, terrainType) > 0
     }
 
     private fun distance2(a: Position, b: Position): Int {
