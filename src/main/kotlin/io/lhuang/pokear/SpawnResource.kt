@@ -16,14 +16,14 @@ class SpawnResource(
     fun getTerrain(
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
-    ): Location {
+    ): SpawnPoint {
         val latLng = LatLng(latitude, longitude)
         val map = mapService.getMap(latLng)
 
         val terrain = habitatService.getTerrain(map)
         val habitat = habitatService.calculateHabitat(latLng, map)
-        val spawns = habitat?.let { pokemonDao.getPokemon(it) } ?: emptyList()
+        val spawns = habitat.let { pokemonDao.getPokemonSpawns(it) }
 
-        return Location(latitude, longitude, terrain, habitat, spawns)
+        return SpawnPoint(latitude, longitude, terrain, habitat, spawns.sortedByDescending { it.spawnChance })
     }
 }

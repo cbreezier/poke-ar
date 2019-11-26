@@ -24,6 +24,5 @@ enum class Habitat(val description: String) {
     GYM("Urban with gym nearby"),
     FARM("Urban with farm nearby"),
 
-    ANY("Any"),
-    NONE("None")
+    EMPTY("Habitat that cannot support life")
 }

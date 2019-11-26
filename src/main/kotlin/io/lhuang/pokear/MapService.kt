@@ -1,14 +1,12 @@
 package io.lhuang.pokear
 
 import com.google.maps.GeoApiContext
-import com.google.maps.ImageResult
 import com.google.maps.StaticMapsApi
 import com.google.maps.StaticMapsRequest
 import com.google.maps.model.LatLng
 import com.google.maps.model.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO

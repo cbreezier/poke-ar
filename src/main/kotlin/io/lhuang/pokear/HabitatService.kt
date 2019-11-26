@@ -12,6 +12,9 @@ class HabitatService {
     companion object {
         const val LAKE_THRESHOLD = 3000
         const val OCEAN_THRESHOLD = 20000
+
+        const val URBAN_ROAD_THRESHOLD = 500
+
         const val SHORT_DISTANCE = 50
         val CARDINALS: Array<Position> = arrayOf(
                 Position(1, 0),
@@ -21,7 +24,7 @@ class HabitatService {
         )
     }
 
-    fun calculateHabitat(latLng: LatLng, map: BufferedImage): Habitat? {
+    fun calculateHabitat(latLng: LatLng, map: BufferedImage): Habitat {
         val terrain = getTerrain(map)
         if (terrain == Terrain.WATER) {
             val waterBodyType = waterBodyType(map);
@@ -50,15 +53,54 @@ class HabitatService {
             return Habitat.FOREST
         } else if (terrain == Terrain.ROAD) {
             return Habitat.ROAD
-        } else if (terrain == Terrain.MANMADE) {
+        } else if (terrain == Terrain.EMPTY) {
             if (isNearby(latLng, "restaurant")) {
                 return Habitat.CITY
-            } else {
+            } else if (countTiles(map, SHORT_DISTANCE) { t -> t == Terrain.ROAD } > URBAN_ROAD_THRESHOLD) {
                 return Habitat.URBAN
+            } else {
+                return Habitat.EMPTY
             }
         } else {
-            return null
+            return Habitat.EMPTY
         }
+    }
+
+    private fun countTiles(map: BufferedImage, searchRadius: Int, terrainType: (Terrain?) -> Boolean): Int {
+        val startingPosition = Position(map.width / 2, map.height / 2)
+        val seen: MutableSet<Position> = HashSet()
+        val queue: PriorityQueue<Position> = PriorityQueue{
+            p1: Position, p2: Position -> distance2(p1, startingPosition).compareTo(distance2(p2, startingPosition))
+        }
+        queue.offer(startingPosition)
+
+        var terrainCount: Int = 0
+
+        while (queue.isNotEmpty()) {
+            val position = queue.remove()
+
+            if (seen.contains(position)) continue
+
+            // Too far away already
+            if (distance2(position, startingPosition) > searchRadius * searchRadius) break
+
+            seen.add(position)
+
+            val terrain = Terrain.fromColor(Color(map.getRGB(position.x, position.y)))
+            if (terrainType.invoke(terrain)) {
+                // Found what we're looking for!
+                terrainCount++
+            }
+
+            for (dir in CARDINALS) {
+                val nextPosition = Position(position.x + dir.x, position.y + dir.y)
+                if (nextPosition.x >= 0 && nextPosition.x < map.width && nextPosition.y >= 0 && nextPosition.y < map.height) {
+                    queue.offer(nextPosition)
+                }
+            }
+        }
+
+        return terrainCount
     }
 
     private fun waterBodyType(map: BufferedImage): Habitat {
@@ -94,38 +136,7 @@ class HabitatService {
     }
 
     private fun isCloseTo(map: BufferedImage, terrainType: (Terrain?) -> Boolean): Boolean {
-        val startingPosition = Position(map.width / 2, map.height / 2)
-        val seen: MutableSet<Position> = HashSet()
-        val queue: PriorityQueue<Position> = PriorityQueue{
-            p1: Position, p2: Position -> distance2(p1, startingPosition).compareTo(distance2(p2, startingPosition))
-        }
-        queue.offer(startingPosition)
-
-        while (queue.isNotEmpty()) {
-            val position = queue.remove()
-
-            if (seen.contains(position)) continue
-
-            // Too far away already
-            if (distance2(position, startingPosition) > SHORT_DISTANCE * SHORT_DISTANCE) return false
-
-            seen.add(position)
-
-            val terrain = Terrain.fromColor(Color(map.getRGB(position.x, position.y)))
-            if (terrainType.invoke(terrain)) {
-                // Found what we're looking for!
-                return true
-            }
-
-            for (dir in CARDINALS) {
-                val nextPosition = Position(position.x + dir.x, position.y + dir.y)
-                if (nextPosition.x >= 0 && nextPosition.x < map.width && nextPosition.y >= 0 && nextPosition.y < map.height) {
-                    queue.offer(nextPosition)
-                }
-            }
-        }
-
-        return false
+        return countTiles(map, SHORT_DISTANCE, terrainType) < SHORT_DISTANCE
     }
 
     private fun distance2(a: Position, b: Position): Int {

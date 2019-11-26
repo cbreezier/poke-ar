@@ -1,9 +1,9 @@
 package io.lhuang.pokear
 
-data class Location(
+data class SpawnPoint(
         val latitude: Double,
         val longitude: Double,
         val terrain: Terrain?,
         val habitat: Habitat?,
-        val spawns: List<Pokemon>
+        val spawns: List<PokemonSpawn>
 )

@@ -6,7 +6,7 @@ enum class Terrain(val type: String, val color: Color) {
     GRASS("grass", Color(0xC9EEC9)),
     FOREST("forest", Color(0xB6E2B6)),
     WATER("water", Color(0xAADAFF)),
-    MANMADE("manmade", Color(0xF2F3F4)),
+    EMPTY("empty", Color(0xF2F3F4)),
     ROAD("road", Color(0xFFFFFF)),
     SAND("sand", Color(0xFAF2C7));
 
@@ -31,7 +31,7 @@ enum class Terrain(val type: String, val color: Color) {
             }
 
             val diff = b - a
-            return diff * 20 < b
+            return diff < 10
         }
     }
 }
