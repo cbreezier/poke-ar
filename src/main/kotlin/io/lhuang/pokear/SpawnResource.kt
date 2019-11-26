@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class SpawnResource(
         private val mapService: MapService,
-        private val habitatService: HabitatService
+        private val habitatService: HabitatService,
+        private val pokemonDao: PokemonDao
 ) {
 
     @GetMapping("/terrain")
@@ -21,7 +22,8 @@ class SpawnResource(
 
         val terrain = habitatService.getTerrain(map)
         val habitat = habitatService.calculateHabitat(latLng, map)
+        val spawns = habitat?.let { pokemonDao.getPokemon(it) } ?: emptyList()
 
-        return Location(latitude, longitude, terrain, habitat)
+        return Location(latitude, longitude, terrain, habitat, spawns)
     }
 }

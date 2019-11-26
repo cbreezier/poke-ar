@@ -1,4 +1,4 @@
-drop table if exists pokemon;
+drop table if exists pokemon cascade;
 create table pokemon(
   id SERIAL,
   name VARCHAR,
@@ -6,7 +6,7 @@ create table pokemon(
   PRIMARY KEY (id)
 );
 
-drop table if exists habitats;
+drop table if exists habitats cascade;
 create table habitats(
   id SERIAL,
   habitat_type VARCHAR,
