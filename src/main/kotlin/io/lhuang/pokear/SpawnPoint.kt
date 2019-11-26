@@ -5,5 +5,5 @@ data class SpawnPoint(
         val longitude: Double,
         val terrain: Terrain?,
         val habitat: Habitat?,
-        val spawns: List<PokemonSpawn>
+        val spawns: List<PokemonSpawnStats>
 )

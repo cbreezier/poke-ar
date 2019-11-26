@@ -24,6 +24,8 @@
       var map;
       var currentMarker; // there can only be one
 
+      var spawnMarkers = [];
+
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
           center: {lat: -34.397, lng: 150.644},
@@ -60,16 +62,64 @@
               formattedContent += "Terrain: " + habitatInfo.terrain + " Habitat: " + habitatInfo.habitat + "<br>";
 
               var spawns = habitatInfo.spawns;
-              spawns.sort((a, b) => (a.spawnChance > b.spawnChance) ? -1 : 1);
+              spawns.sort(function(a, b) {
+                return (a.spawnChance > b.spawnChance) ? -1 : 1;
+              });
               spawns.forEach(function(spawn) {
                 formattedContent += spawn.pokemon.name + "\t" + spawn.spawnChance + "<br>";
               });
+
+              formattedContent += '<button onClick="generateSpawns(' + habitatInfo.latitude + ', ' + habitatInfo.longitude + ')">Spawn here </button>';
               infoWindow.setContent(formattedContent);
             }
           };
-          xmlHttp.open("GET", "http://localhost:8082/terrain?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
+          xmlHttp.open("GET", "http://localhost:8082/spawnInfo?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
           xmlHttp.send(null);
+
+          // get existing spawns
+          renderSpawns(latLng.lat(), latLng.lng());
         });
+      }
+
+      function renderSpawns(latitude, longitude) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            var spawns = JSON.parse(xmlHttp.responseText);
+            console.log("spawns", spawns);
+
+            // remove old markers
+            spawnMarkers.forEach(function(spawnMarker) {
+              spawnMarker.setMap(null);
+            });
+            spawnMarkers = [];
+
+            spawns.forEach(function(spawn) {
+              var marker = new google.maps.Marker({
+                position: {lat: spawn.latitude, lng: spawn.longitude},
+                map: map,
+                icon: 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png',
+                label: spawn.pokemon.name
+              });
+              spawnMarkers.push(marker);
+            });
+          }
+        };
+        xmlHttp.open("GET", "http://localhost:8082/spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.send(null);
+      }
+
+      function generateSpawns(latitude, longitude) {
+        console.log('Generating spawns', latitude, longitude);
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            renderSpawns(latitude, longitude);
+          }
+        };
+        xmlHttp.open("POST", "http://localhost:8082/spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.send(null);
       }
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDAyURyzuAi38Am-nkzYCAao52ZhEWDu10&callback=initMap"

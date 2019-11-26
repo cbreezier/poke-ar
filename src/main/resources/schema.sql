@@ -16,3 +16,14 @@ create table habitats(
   PRIMARY KEY (id),
   FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)
 );
+
+drop table if exists spawns cascade;
+create table spawns(
+  id SERIAL,
+  latitude REAL,
+  longitude REAL,
+  pokemon_id INTEGER,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)
+)

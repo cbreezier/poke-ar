@@ -9,11 +9,13 @@ class PokemonSpawnRowMapper : RowMapper<PokemonSpawn> {
     override fun mapRow(rs: ResultSet, rowNum: Int): PokemonSpawn? {
         val id = rs.getLong("id")
         val name = rs.getString("name")
-        val rarity = rs.getDouble("rarity")
+        val latitude = rs.getDouble("latitude")
+        val longitude = rs.getDouble("longitude")
 
         return PokemonSpawn(
                 Pokemon(id, name),
-                rarity
+                latitude,
+                longitude
         )
     }
 }
