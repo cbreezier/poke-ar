@@ -7,7 +7,9 @@ import java.awt.image.BufferedImage
 import java.util.*
 
 @Component
-class HabitatService {
+class HabitatService(
+        val mapService: MapService
+) {
 
     companion object {
         const val LAKE_THRESHOLD = 3000
@@ -22,6 +24,10 @@ class HabitatService {
                 Position(-1, 0),
                 Position(0, -1)
         )
+    }
+
+    fun calculateHabitat(latLng: LatLng): Habitat {
+        return calculateHabitat(latLng, mapService.getMap(latLng));
     }
 
     fun calculateHabitat(latLng: LatLng, map: BufferedImage): Habitat {
