@@ -44,7 +44,7 @@ class HabitatService(
                 return waterBodyType
             }
         } else if (terrain == Terrain.GRASS) {
-            if (isNearby(latLng, "garden")) {
+            if (isNearby(latLng, "garden", 100, 1)) {
                 return Habitat.GARDEN
             } else {
                 return Habitat.GRASS
@@ -60,7 +60,7 @@ class HabitatService(
         } else if (terrain == Terrain.ROAD) {
             return Habitat.ROAD
         } else if (terrain == Terrain.EMPTY) {
-            if (isNearby(latLng, "restaurant")) {
+            if (isNearby(latLng, "restaurant", 10, 3)) {
                 return Habitat.CITY
             } else if (countTiles(map, SHORT_DISTANCE) { t -> t == Terrain.ROAD } > URBAN_ROAD_THRESHOLD) {
                 return Habitat.URBAN
@@ -146,13 +146,14 @@ class HabitatService(
     }
 
     private fun distance2(a: Position, b: Position): Int {
-        val dx = a.x - b.x;
-        val dy = a.y - b.y;
-        return (dx * dx) + (dy * dy);
+        val dx = a.x - b.x
+        val dy = a.y - b.y
+        return (dx * dx) + (dy * dy)
     }
 
-    private fun isNearby(latLng: LatLng, searchTerm: String): Boolean {
-        return false
+    private fun isNearby(latLng: LatLng, searchTerm: String, distanceMeters: Int, numNearby: Int): Boolean {
+        val nearbyResults = mapService.getNearby(latLng, searchTerm, distanceMeters)
+        return nearbyResults.size > numNearby
     }
 
     fun getTerrain(map: BufferedImage): Terrain? {

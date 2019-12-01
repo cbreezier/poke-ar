@@ -1,9 +1,11 @@
 package io.lhuang.pokear
 
 import com.google.maps.GeoApiContext
+import com.google.maps.PlacesApi
 import com.google.maps.StaticMapsApi
 import com.google.maps.StaticMapsRequest
 import com.google.maps.model.LatLng
+import com.google.maps.model.PlacesSearchResult
 import com.google.maps.model.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -40,5 +42,14 @@ class MapService {
         val image = ImageIO.read(ByteArrayInputStream(imageResult.imageData))
 
         return image
+    }
+
+    fun getNearby(latLng: LatLng, searchTerm: String, radiusMeters: Int): List<PlacesSearchResult> {
+        return PlacesApi.nearbySearchQuery(apiContext.value, latLng)
+                .keyword(searchTerm)
+                .radius(radiusMeters)
+                .await()
+                .results
+                .toList()
     }
 }
