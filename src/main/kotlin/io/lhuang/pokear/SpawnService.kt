@@ -18,6 +18,10 @@ class SpawnService(
         private val JITTER_DURATION = Duration.ofMinutes(20)
     }
 
+    fun cleanupSpawns() {
+        spawnDao.cleanupSpawns(Instant.now())
+    }
+
     fun getSpawns(center: LatLng, width: Double, height: Double): List<PokemonSpawn> {
         return spawnDao.getSpawns(center, width, height, Instant.now())
     }
