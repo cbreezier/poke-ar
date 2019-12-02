@@ -20,8 +20,8 @@ create table habitats(
 drop table if exists spawns cascade;
 create table spawns(
   id SERIAL,
-  latitude REAL,
-  longitude REAL,
+  world_x DOUBLE PRECISION,
+  world_y DOUBLE PRECISION,
   pokemon_id INTEGER,
   start_timestamp BIGINT,
   end_timestamp BIGINT,

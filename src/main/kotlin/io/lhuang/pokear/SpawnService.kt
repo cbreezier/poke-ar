@@ -15,15 +15,18 @@ class SpawnService(
         val spawnDao: SpawnDao
 ) {
     companion object {
-        private val JITTER_DURATION = Duration.ofMinutes(20)
+        const val SPAWN_FREQUENCY_MINUTES = 1L
+        val SPAWN_FREQUENCY = Duration.ofMinutes(SPAWN_FREQUENCY_MINUTES)
+        private const val TILE_WIDTH = 0.0078125
+        private const val TILE_HEIGHT = 0.0078125
     }
 
     fun cleanupSpawns() {
         spawnDao.cleanupSpawns(Instant.now())
     }
 
-    fun getSpawns(center: LatLng, width: Double, height: Double): List<PokemonSpawn> {
-        return spawnDao.getSpawns(center, width, height, Instant.now())
+    fun getSpawns(center: LatLng): List<PokemonSpawn> {
+        return spawnDao.getSpawns(MercatorProjection.latLngToWorldPoint(center), TILE_WIDTH, TILE_HEIGHT, Instant.now())
     }
 
     fun spawnPokemon(center: LatLng, num: Int) {
@@ -40,11 +43,12 @@ class SpawnService(
                             .flatMap { pokemonDao.getPokemonSpawns(it) }
 
                     val pokemon = weightedRandomBy(spawnPoints) { it.spawnChance }?.pokemon
-                    val startTime = Instant.now().plus(jitter(JITTER_DURATION))
+                    val startTime = Instant.now().plus(jitter(SPAWN_FREQUENCY))
                     val endTime = startTime.plus(Duration.ofMinutes(20))
+                    val worldPoint = MercatorProjection.mapPointToWorldPoint(map, mapPoint)
 
                     if (pokemon != null) {
-                        spawnDao.addSpawn(MercatorProjection.fromMapPoint(map, mapPoint), pokemon, startTime, endTime)
+                        spawnDao.addSpawn(worldPoint, pokemon, startTime, endTime)
                     }
                 }
     }

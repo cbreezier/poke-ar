@@ -1,7 +1,7 @@
 package io.lhuang.pokear
 
 import com.google.maps.model.LatLng
-import io.lhuang.pokear.MercatorProjection.Companion.fromLatLng
+import io.lhuang.pokear.MercatorProjection.Companion.latLngToWorldPoint
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import java.awt.image.BufferedImage
@@ -19,8 +19,8 @@ class MapBoundsTest {
                 mockImage,
                 emptyMap()
         )
-        val topLeft = fromLatLng(MercatorProjection.fromMapPoint(map, MapPoint(0, 0)))
-        val botRight = fromLatLng(MercatorProjection.fromMapPoint(map, MapPoint(512, 512)))
+        val topLeft = latLngToWorldPoint(MercatorProjection.mapPointToLatLng(map, MapPoint(0, 0)))
+        val botRight = latLngToWorldPoint(MercatorProjection.mapPointToLatLng(map, MapPoint(512, 512)))
 
         val width = botRight.x - topLeft.x
         val height = botRight.y - topLeft.y

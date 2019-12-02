@@ -11,7 +11,7 @@ class MercatorProjection {
         const val PIXELS_PER_LON_DEGREE = MERCATOR_RANGE / 360.0
         const val PIXELS_PER_LON_RADIAN = MERCATOR_RANGE / (2 * PI)
 
-        fun fromLatLng(latLng: LatLng): WorldPoint {
+        fun latLngToWorldPoint(latLng: LatLng): WorldPoint {
             val x = ORIGIN_WORLD_POINT.x + latLng.lng * PIXELS_PER_LON_DEGREE
 
             val siny = sin(degreesToRadians(latLng.lat))
@@ -24,7 +24,7 @@ class MercatorProjection {
             return WorldPoint(x, y)
         }
 
-        fun fromWorldPoint(worldPoint: WorldPoint): LatLng {
+        fun worldPointToLatLng(worldPoint: WorldPoint): LatLng {
             val lng = (worldPoint.x - ORIGIN_WORLD_POINT.x) / PIXELS_PER_LON_DEGREE
             val latRadians = (worldPoint.y - ORIGIN_WORLD_POINT.y) / -PIXELS_PER_LON_RADIAN
             var lat = radiansToDegrees(2 * atan(exp(latRadians)) - PI / 2)
@@ -32,26 +32,31 @@ class MercatorProjection {
             return LatLng(lat, lng)
         }
 
-        fun fromLatLng(map: MapData, latLng: LatLng): MapPoint {
+        fun latLngToMapPoint(map: MapData, latLng: LatLng): MapPoint {
+            return worldPointToMapPoint(map, latLngToWorldPoint(latLng))
+        }
+
+        fun mapPointToLatLng(map: MapData, mapPoint: MapPoint): LatLng {
+            return worldPointToLatLng(mapPointToWorldPoint(map, mapPoint))
+        }
+
+        fun mapPointToWorldPoint(map: MapData, mapPoint: MapPoint): WorldPoint {
             val scale = 2.0.pow(map.zoom.toDouble())
-            val centerWorldPoint = fromLatLng(map.center)
-            val worldPoint = fromLatLng(latLng)
+            val centerWorldPoint = latLngToWorldPoint(map.center)
+            return WorldPoint(
+                    centerWorldPoint.x + (mapPoint.x - map.width / 2) / scale,
+                    centerWorldPoint.y + (mapPoint.y - map.height / 2) / scale
+            )
+        }
+
+        fun worldPointToMapPoint(map: MapData, worldPoint: WorldPoint): MapPoint {
+            val scale = 2.0.pow(map.zoom.toDouble())
+            val centerWorldPoint = latLngToWorldPoint(map.center)
 
             return MapPoint(
                     ((worldPoint.x - centerWorldPoint.x) * scale).toInt() + map.width / 2,
                     ((worldPoint.y - centerWorldPoint.y) * scale).toInt() + map.height / 2
             )
-        }
-
-        fun fromMapPoint(map: MapData, mapPoint: MapPoint): LatLng {
-            val scale = 2.0.pow(map.zoom.toDouble())
-            val centerWorldPoint = fromLatLng(map.center)
-            val worldPoint = WorldPoint(
-                    centerWorldPoint.x + (mapPoint.x - map.width / 2) / scale,
-                    centerWorldPoint.y + (mapPoint.y - map.height / 2) / scale
-            )
-
-            return fromWorldPoint(worldPoint)
         }
 
         private fun degreesToRadians(degrees: Double): Double {

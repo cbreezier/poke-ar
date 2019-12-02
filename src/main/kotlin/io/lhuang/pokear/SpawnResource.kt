@@ -36,10 +36,8 @@ class SpawnResource(
             @RequestParam(value = "lng") longitude: Double
     ): List<PokemonSpawn> {
         val center = LatLng(latitude, longitude)
-        val width = 0.015
-        val height = 0.015
 
-        return spawnService.getSpawns(center, width, height)
+        return spawnService.getSpawns(center)
     }
 
     @PostMapping("/spawn")

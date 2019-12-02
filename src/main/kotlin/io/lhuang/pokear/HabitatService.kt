@@ -1,6 +1,5 @@
 package io.lhuang.pokear
 
-import com.google.maps.model.LatLng
 import org.springframework.stereotype.Component
 import java.awt.Color
 import java.util.*
@@ -152,7 +151,7 @@ class HabitatService(
 
     private fun isNearby(map: MapData, mapPoint: MapPoint, pointOfInterest: PointOfInterest, distanceMeters: Int, numNearbyThreshold: Int): Boolean {
         val numNearby = map.places[pointOfInterest]
-                ?.map { MercatorProjection.fromLatLng(map, it) }
+                ?.map { MercatorProjection.latLngToMapPoint(map, it) }
                 ?.map { distance2(it, mapPoint) }
                 ?.filter { it <= distanceMeters * distanceMeters }
                 ?.count()
