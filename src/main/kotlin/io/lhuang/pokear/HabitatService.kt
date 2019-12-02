@@ -3,8 +3,8 @@ package io.lhuang.pokear
 import com.google.maps.model.LatLng
 import org.springframework.stereotype.Component
 import java.awt.Color
-import java.awt.image.BufferedImage
 import java.util.*
+import kotlin.collections.ArrayList
 
 @Component
 class HabitatService(
@@ -18,69 +18,68 @@ class HabitatService(
         const val URBAN_ROAD_THRESHOLD = 500
 
         const val SHORT_DISTANCE = 50
-        val CARDINALS: Array<Position> = arrayOf(
-                Position(1, 0),
-                Position(0, 1),
-                Position(-1, 0),
-                Position(0, -1)
+        val CARDINALS: Array<Vector> = arrayOf(
+                Vector(1, 0),
+                Vector(0, 1),
+                Vector(-1, 0),
+                Vector(0, -1)
         )
     }
 
-    fun calculateHabitat(latLng: LatLng): Habitat {
-        return calculateHabitat(latLng, mapService.getMap(latLng));
+    fun calculateHabitat(map: MapData): List<Habitat> {
+        return calculateHabitat(map, MapPoint(map.width / 2, map.height / 2))
     }
 
-    fun calculateHabitat(latLng: LatLng, map: BufferedImage): Habitat {
-        val terrain = getTerrain(map)
+    fun calculateHabitat(map: MapData, mapPoint: MapPoint): List<Habitat> {
+        val terrain = getTerrain(map, mapPoint)
+        val habitats: MutableList<Habitat> = ArrayList()
+
         if (terrain == Terrain.WATER) {
-            val waterBodyType = waterBodyType(map);
+            val waterBodyType = waterBodyType(map, mapPoint)
             if (waterBodyType == Habitat.OCEAN) {
-                if (isCloseTo(map) { t -> t != Terrain.WATER }) {
-                    return Habitat.SHORE
+                if (isCloseTo(map, mapPoint) { t -> t != Terrain.WATER }) {
+                    habitats.add(Habitat.SHORE)
                 } else {
-                    return Habitat.OCEAN
+                    habitats.add(Habitat.OCEAN)
                 }
             } else {
-                return waterBodyType
+                habitats.add(waterBodyType)
             }
         } else if (terrain == Terrain.GRASS) {
-            if (isNearby(latLng, "garden", 100, 1)) {
-                return Habitat.GARDEN
+            if (isNearby(map, mapPoint, PointOfInterest.GARDEN, 100, 1)) {
+                habitats.add(Habitat.GARDEN)
             } else {
-                return Habitat.GRASS
+                habitats.add(Habitat.GRASS)
             }
         } else if (terrain == Terrain.SAND) {
-            if (isCloseTo(map) { t -> t == Terrain.WATER }) {
-                return Habitat.BEACH
+            if (isCloseTo(map, mapPoint) { t -> t == Terrain.WATER }) {
+                habitats.add(Habitat.BEACH)
             } else {
-                return Habitat.SAND
+                habitats.add(Habitat.SAND)
             }
         } else if (terrain == Terrain.FOREST) {
-            return Habitat.FOREST
+            habitats.add(Habitat.FOREST)
         } else if (terrain == Terrain.ROAD) {
-            return Habitat.ROAD
+            habitats.add(Habitat.ROAD)
         } else if (terrain == Terrain.EMPTY) {
-            if (isNearby(latLng, "restaurant", 10, 3)) {
-                return Habitat.CITY
-            } else if (countTiles(map, SHORT_DISTANCE) { t -> t == Terrain.ROAD } > URBAN_ROAD_THRESHOLD) {
-                return Habitat.URBAN
-            } else {
-                return Habitat.EMPTY
+            if (isNearby(map, mapPoint, PointOfInterest.RESTAURANT, 10, 3)) {
+                habitats.add(Habitat.CITY)
+            } else if (countTiles(map, mapPoint, SHORT_DISTANCE) { t -> t == Terrain.ROAD } > URBAN_ROAD_THRESHOLD) {
+                habitats.add(Habitat.URBAN)
             }
-        } else {
-            return Habitat.EMPTY
         }
+
+        return habitats
     }
 
-    private fun countTiles(map: BufferedImage, searchRadius: Int, terrainType: (Terrain?) -> Boolean): Int {
-        val startingPosition = Position(map.width / 2, map.height / 2)
-        val seen: MutableSet<Position> = HashSet()
-        val queue: PriorityQueue<Position> = PriorityQueue{
-            p1: Position, p2: Position -> distance2(p1, startingPosition).compareTo(distance2(p2, startingPosition))
+    private fun countTiles(map: MapData, startingPosition: MapPoint, searchRadius: Int, terrainType: (Terrain?) -> Boolean): Int {
+        val seen: MutableSet<MapPoint> = HashSet()
+        val queue: PriorityQueue<MapPoint> = PriorityQueue{
+            p1: MapPoint, p2: MapPoint -> distance2(p1, startingPosition).compareTo(distance2(p2, startingPosition))
         }
         queue.offer(startingPosition)
 
-        var terrainCount: Int = 0
+        var terrainCount = 0
 
         while (queue.isNotEmpty()) {
             val position = queue.remove()
@@ -92,14 +91,14 @@ class HabitatService(
 
             seen.add(position)
 
-            val terrain = Terrain.fromColor(Color(map.getRGB(position.x, position.y)))
+            val terrain = Terrain.fromColor(Color(map.imageData.getRGB(position.x, position.y)))
             if (terrainType.invoke(terrain)) {
                 // Found what we're looking for!
                 terrainCount++
             }
 
             for (dir in CARDINALS) {
-                val nextPosition = Position(position.x + dir.x, position.y + dir.y)
+                val nextPosition = MapPoint(position.x + dir.x, position.y + dir.y)
                 if (nextPosition.x >= 0 && nextPosition.x < map.width && nextPosition.y >= 0 && nextPosition.y < map.height) {
                     queue.offer(nextPosition)
                 }
@@ -109,23 +108,23 @@ class HabitatService(
         return terrainCount
     }
 
-    private fun waterBodyType(map: BufferedImage): Habitat {
-        val seen: MutableSet<Position> = HashSet()
-        val queue: Queue<Position> = LinkedList()
-        queue.offer(Position(map.width / 2, map.height / 2))
+    private fun waterBodyType(map: MapData, startingPosition: MapPoint): Habitat {
+        val seen: MutableSet<MapPoint> = HashSet()
+        val queue: Queue<MapPoint> = LinkedList()
+        queue.offer(startingPosition)
 
         while (queue.isNotEmpty() && seen.size < OCEAN_THRESHOLD) {
             val position = queue.remove()
 
             if (seen.contains(position)) continue
 
-            val terrain = Terrain.fromColor(Color(map.getRGB(position.x, position.y)))
+            val terrain = Terrain.fromColor(Color(map.imageData.getRGB(position.x, position.y)))
             if (terrain != Terrain.WATER) continue
 
             seen.add(position)
 
             for (dir in CARDINALS) {
-                val nextPosition = Position(position.x + dir.x, position.y + dir.y)
+                val nextPosition = MapPoint(position.x + dir.x, position.y + dir.y)
                 if (nextPosition.x >= 0 && nextPosition.x < map.width && nextPosition.y >= 0 && nextPosition.y < map.height) {
                     queue.offer(nextPosition)
                 }
@@ -141,26 +140,38 @@ class HabitatService(
         }
     }
 
-    private fun isCloseTo(map: BufferedImage, terrainType: (Terrain?) -> Boolean): Boolean {
-        return countTiles(map, SHORT_DISTANCE, terrainType) > 0
+    private fun isCloseTo(map: MapData, mapPoint: MapPoint, terrainType: (Terrain?) -> Boolean): Boolean {
+        return countTiles(map, mapPoint, SHORT_DISTANCE, terrainType) > 0
     }
 
-    private fun distance2(a: Position, b: Position): Int {
+    private fun distance2(a: MapPoint, b: MapPoint): Int {
         val dx = a.x - b.x
         val dy = a.y - b.y
         return (dx * dx) + (dy * dy)
     }
 
-    private fun isNearby(latLng: LatLng, searchTerm: String, distanceMeters: Int, numNearby: Int): Boolean {
-        val nearbyResults = mapService.getNearby(latLng, searchTerm, distanceMeters)
-        return nearbyResults.size > numNearby
+    private fun isNearby(map: MapData, mapPoint: MapPoint, pointOfInterest: PointOfInterest, distanceMeters: Int, numNearbyThreshold: Int): Boolean {
+        val numNearby = map.places[pointOfInterest]
+                ?.map { MercatorProjection.fromLatLng(map, it) }
+                ?.map { distance2(it, mapPoint) }
+                ?.filter { it <= distanceMeters * distanceMeters }
+                ?.count()
+                ?: 0
+        return numNearby >= numNearbyThreshold
     }
 
-    fun getTerrain(map: BufferedImage): Terrain? {
-        val pixel = Color(map.getRGB(map.width / 2, map.height / 2))
+    fun getTerrain(map: MapData): Terrain? {
+        return getTerrain(map, MapPoint(map.width / 2, map.height / 2))
+    }
+
+    fun getTerrain(map: MapData, mapPoint: MapPoint): Terrain? {
+        val pixel = Color(map.imageData.getRGB(mapPoint.x, mapPoint.y))
 
         return Terrain.fromColor(pixel)
     }
 
-    data class Position(val x: Int, val y: Int)
+    data class Vector(
+            val x: Int,
+            val y: Int
+    )
 }

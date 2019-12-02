@@ -28,8 +28,8 @@
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -34.397, lng: 150.644},
-          zoom: 8
+          center: {lat: -33.87232146169757, lng: 151.2114126633530},
+          zoom: 14
         });
 
         map.addListener('click', function(e) {
@@ -59,7 +59,7 @@
 
               var formattedContent = '';
               formattedContent += "Latitude: " + habitatInfo.latitude + " Longitude: " + habitatInfo.longitude + "<br>";
-              formattedContent += "Terrain: " + habitatInfo.terrain + " Habitat: " + habitatInfo.habitat + "<br>";
+              formattedContent += "Terrain: " + habitatInfo.terrain + " Habitat: " + habitatInfo.habitats + "<br>";
 
               var spawns = habitatInfo.spawns;
               spawns.sort(function(a, b) {

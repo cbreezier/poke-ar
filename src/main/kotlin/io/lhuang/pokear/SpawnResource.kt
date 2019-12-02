@@ -24,10 +24,10 @@ class SpawnResource(
         val map = mapService.getMap(latLng)
 
         val terrain = habitatService.getTerrain(map)
-        val habitat = habitatService.calculateHabitat(latLng, map)
-        val spawns = habitat.let { pokemonDao.getPokemonSpawns(it) }
+        val habitats = habitatService.calculateHabitat(map)
+        val spawns = habitats.flatMap { pokemonDao.getPokemonSpawns(it) }
 
-        return SpawnPoint(latitude, longitude, terrain, habitat, spawns.sortedByDescending { it.spawnChance })
+        return SpawnPoint(latitude, longitude, terrain, habitats, spawns.sortedByDescending { it.spawnChance })
     }
 
     @GetMapping("/spawn")

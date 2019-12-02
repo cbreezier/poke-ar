@@ -5,11 +5,9 @@ import com.google.maps.PlacesApi
 import com.google.maps.StaticMapsApi
 import com.google.maps.StaticMapsRequest
 import com.google.maps.model.LatLng
-import com.google.maps.model.PlacesSearchResult
 import com.google.maps.model.Size
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
-import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
 
@@ -29,7 +27,7 @@ class MapService {
         }
     }
 
-    fun getMap(latLng: LatLng): BufferedImage {
+    fun getMap(latLng: LatLng): MapData {
         val imageResult = StaticMapsApi.newRequest(apiContext.value, Size(512, 512))
                 .center(latLng)
                 .zoom(16)
@@ -41,15 +39,30 @@ class MapService {
 
         val image = ImageIO.read(ByteArrayInputStream(imageResult.imageData))
 
-        return image
+        val places = PointOfInterest.values()
+                .map { Pair(it, getNearby(latLng, it.searchTerm, 100)) /* TODO how many meters? */ }
+                .toMap()
+
+        return MapData(
+                latLng,
+                512,
+                512,
+                16,
+                image,
+                places
+        )
     }
 
-    fun getNearby(latLng: LatLng, searchTerm: String, radiusMeters: Int): List<PlacesSearchResult> {
-        return PlacesApi.nearbySearchQuery(apiContext.value, latLng)
+    fun getNearby(latLng: LatLng, searchTerm: String, radiusMeters: Int): List<LatLng> {
+        val searchResults = PlacesApi.nearbySearchQuery(apiContext.value, latLng)
                 .keyword(searchTerm)
                 .radius(radiusMeters)
                 .await()
                 .results
+                .toList()
+
+        return searchResults
+                .map { it.geometry.location }
                 .toList()
     }
 }

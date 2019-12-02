@@ -2,12 +2,12 @@ package io.lhuang.pokear
 
 import com.google.maps.model.LatLng
 import org.springframework.stereotype.Component
-import java.util.concurrent.ForkJoinPool
 import kotlin.random.Random
 
 
 @Component
 class SpawnService(
+        val mapService: MapService,
         val habitatService: HabitatService,
         val pokemonDao: PokemonDao,
         val spawnDao: SpawnDao
@@ -18,20 +18,23 @@ class SpawnService(
     }
 
     fun spawnPokemon(center: LatLng, width: Double, height: Double, num: Int) {
-        val customThreadPool = ForkJoinPool(num)
-        customThreadPool.submit { ->
-        (0..num).toList().parallelStream()
+        val map = mapService.getMap(center)
+
+        (0..num).toList()
                 .forEach {
-                    val location = LatLng(center.lat + Random.nextDouble() * width - (width / 2), center.lng + Random.nextDouble() * height - (height / 2))
-                    val habitat = habitatService.calculateHabitat(location)
-                    val spawnPoints = pokemonDao.getPokemonSpawns(habitat)
+                    val mapPoint = MapPoint(
+                            Random.nextInt(0, 512),
+                            Random.nextInt(0, 512)
+                    ) // TODO hardcoded 512 needs to go somewhere
+
+                    val spawnPoints = habitatService.calculateHabitat(map, mapPoint)
+                            .flatMap { pokemonDao.getPokemonSpawns(it) }
 
                     val pokemon = weightedRandomBy(spawnPoints) { it.spawnChance }?.pokemon
                     if (pokemon != null) {
-                        spawnDao.addSpawn(location, pokemon)
+                        spawnDao.addSpawn(MercatorProjection.fromMapPoint(map, mapPoint), pokemon)
                     }
                 }
-        }.join() // TODO spawning should always be done on background threads somehow
     }
 
     private fun <T> weightedRandomBy(inputs: List<T>, by: (T) -> Double): T? {
