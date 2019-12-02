@@ -17,7 +17,7 @@ class SpawnService(
         return spawnDao.getSpawns(center, width, height)
     }
 
-    fun spawnPokemon(center: LatLng, width: Double, height: Double, num: Int) {
+    fun spawnPokemon(center: LatLng, num: Int) {
         val map = mapService.getMap(center)
 
         (0..num).toList()

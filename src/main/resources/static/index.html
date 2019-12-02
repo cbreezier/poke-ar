@@ -48,33 +48,33 @@
           });
           currentMarker.addListener('click', function() {
             infoWindow.open(map, currentMarker);
+
+            // get habitat info
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+              if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+                var habitatInfo = JSON.parse(xmlHttp.responseText);
+                console.log("habitatInfo", habitatInfo);
+
+                var formattedContent = '';
+                formattedContent += "Latitude: " + habitatInfo.latitude + " Longitude: " + habitatInfo.longitude + "<br>";
+                formattedContent += "Terrain: " + habitatInfo.terrain + " Habitat: " + habitatInfo.habitats + "<br>";
+
+                var spawns = habitatInfo.spawns;
+                spawns.sort(function(a, b) {
+                  return (a.spawnChance > b.spawnChance) ? -1 : 1;
+                });
+                spawns.forEach(function(spawn) {
+                  formattedContent += spawn.pokemon.name + "\t" + spawn.spawnChance + "<br>";
+                });
+
+                formattedContent += '<button onClick="generateSpawns(' + habitatInfo.latitude + ', ' + habitatInfo.longitude + ')">Spawn here </button>';
+                infoWindow.setContent(formattedContent);
+              }
+            };
+            xmlHttp.open("GET", "../spawnInfo?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
+            xmlHttp.send(null);
           });
-
-          // get habitat info
-          var xmlHttp = new XMLHttpRequest();
-          xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
-              var habitatInfo = JSON.parse(xmlHttp.responseText);
-              console.log("habitatInfo", habitatInfo);
-
-              var formattedContent = '';
-              formattedContent += "Latitude: " + habitatInfo.latitude + " Longitude: " + habitatInfo.longitude + "<br>";
-              formattedContent += "Terrain: " + habitatInfo.terrain + " Habitat: " + habitatInfo.habitats + "<br>";
-
-              var spawns = habitatInfo.spawns;
-              spawns.sort(function(a, b) {
-                return (a.spawnChance > b.spawnChance) ? -1 : 1;
-              });
-              spawns.forEach(function(spawn) {
-                formattedContent += spawn.pokemon.name + "\t" + spawn.spawnChance + "<br>";
-              });
-
-              formattedContent += '<button onClick="generateSpawns(' + habitatInfo.latitude + ', ' + habitatInfo.longitude + ')">Spawn here </button>';
-              infoWindow.setContent(formattedContent);
-            }
-          };
-          xmlHttp.open("GET", "../spawnInfo?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
-          xmlHttp.send(null);
 
           // get existing spawns
           renderSpawns(latLng.lat(), latLng.lng());

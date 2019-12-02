@@ -48,10 +48,8 @@ class SpawnResource(
             @RequestParam(value = "lng") longitude: Double
     ): ResponseEntity<Void> {
         val center = LatLng(latitude, longitude)
-        val width = 0.015
-        val height = 0.015
 
-        spawnService.spawnPokemon(center, width, height, 15)
+        spawnService.spawnPokemon(center, 15)
 
         return ResponseEntity.ok().build()
     }
