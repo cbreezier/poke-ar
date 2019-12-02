@@ -23,6 +23,8 @@ create table spawns(
   latitude REAL,
   longitude REAL,
   pokemon_id INTEGER,
+  start_timestamp BIGINT,
+  end_timestamp BIGINT,
 
   PRIMARY KEY (id),
   FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)

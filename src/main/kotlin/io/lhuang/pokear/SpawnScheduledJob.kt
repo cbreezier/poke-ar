@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component
 class SpawnScheduledJob(
         val spawnService: SpawnService
 ) {
-    @Scheduled(fixedRate = 1000 * 60) // 1 minute
+    @Scheduled(fixedRate = 1000 * 60 * 20) // 20 minutes
     fun spawnPokemon() {
         spawnService.spawnPokemon(LatLng(-33.860327135599825, 151.20133193998765), 20)
     }
