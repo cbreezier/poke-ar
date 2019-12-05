@@ -1,8 +1,16 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.spawn
 
 import com.google.maps.model.LatLng
-import io.lhuang.pokear.MercatorProjection.Companion.latLngToWorldPoint
-import io.lhuang.pokear.MercatorProjection.Companion.worldPointToLatLng
+import io.lhuang.pokear.map.WorldPoint
+import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
+import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToLatLng
+import io.lhuang.pokear.habitat.HabitatService
+import io.lhuang.pokear.map.MapPoint
+import io.lhuang.pokear.map.MapService
+import io.lhuang.pokear.map.MercatorProjection
+import io.lhuang.pokear.pokedex.PokedexDao
+import io.lhuang.pokear.pokemon.Pokemon
+import io.lhuang.pokear.pokemon.PokemonSpawn
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
@@ -13,7 +21,7 @@ import kotlin.random.Random
 class SpawnService(
         val mapService: MapService,
         val habitatService: HabitatService,
-        val pokemonDao: PokemonDao,
+        val pokedexDao: PokedexDao,
         val spawnDao: SpawnDao
 ) {
     companion object {
@@ -48,14 +56,19 @@ class SpawnService(
                     ) // TODO hardcoded 512 needs to go somewhere
 
                     val spawnPoints = habitatService.calculateHabitat(map, mapPoint)
-                            .flatMap { pokemonDao.getPokemonSpawns(it) }
+                            .flatMap { pokedexDao.getPokemonSpawns(it) }
 
-                    val pokemon = weightedRandomBy(spawnPoints) { it.spawnChance }?.pokemon
+                    val pokedex = weightedRandomBy(spawnPoints) { it.spawnChance }?.pokedex
                     val startTime = Instant.now().plus(jitter(SPAWN_FREQUENCY))
-                    val endTime = startTime.plus(Duration.ofMinutes(20))
+                    val endTime = startTime.plus(SPAWN_FREQUENCY)
                     val worldPoint = MercatorProjection.mapPointToWorldPoint(map, mapPoint)
 
-                    if (pokemon != null) {
+                    if (pokedex != null) {
+                        val pokemon = Pokemon(
+                                pokedex,
+                                100, // TODO
+                                Random.nextInt(100) // TODO
+                        )
                         spawnDao.addSpawn(worldPoint, pokemon, startTime, endTime)
                     }
                 }
@@ -69,6 +82,11 @@ class SpawnService(
         )
 
         spawnDao.visitLocation(discreteLocation, Instant.now())
+    }
+
+    fun getVisitedLocations(): List<LatLng> {
+        return spawnDao.getVisitedLocations()
+                .map { MercatorProjection.worldPointToLatLng(it) }
     }
 
     private fun discretify(num: Double, discreteInterval: Double): Double {

@@ -1,20 +1,21 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.pokedex
 
+import io.lhuang.pokear.habitat.Habitat
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class PokemonDao(
+class PokedexDao(
         private val jdbcTemplate: JdbcTemplate,
-        private val pokemonRowMapper: PokemonRowMapper,
-        private val pokemonSpawnStatsRowMapper: PokemonSpawnStatsRowMapper
+        private val pokedexRowMapper: PokedexRowMapper,
+        private val pokedexSpawnStatsRowMapper: PokedexSpawnStatsRowMapper
 ) {
 
-    fun getPokemon(): List<Pokemon> {
-        return jdbcTemplate.query("select id, name from pokemon", pokemonRowMapper)
+    fun getPokemon(): List<Pokedex> {
+        return jdbcTemplate.query("select id, name from pokedex", pokedexRowMapper)
     }
 
-    fun getPokemonSpawns(habitat: Habitat): List<PokemonSpawnStats> {
+    fun getPokemonSpawns(habitat: Habitat): List<PokedexSpawnStats> {
         return jdbcTemplate.query(
                 """
                     SELECT
@@ -22,10 +23,10 @@ class PokemonDao(
                         p.name,
                         h.rarity
                     FROM habitats h
-                    JOIN pokemon p ON h.pokemon_id = p.id
+                    JOIN pokedex p ON h.pokedex_id = p.id
                     WHERE h.habitat_type = '${habitat.name}' OR h.habitat_type = 'ANY'
                 """.trimIndent(),
-                pokemonSpawnStatsRowMapper
+                pokedexSpawnStatsRowMapper
         )
     }
 }

@@ -1,5 +1,6 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.map
 
+import io.lhuang.pokear.map.WorldPoint
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import java.sql.ResultSet

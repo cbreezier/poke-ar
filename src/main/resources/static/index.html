@@ -25,6 +25,7 @@
       var currentMarker; // there can only be one
 
       var spawnMarkers = [];
+      var visitedMarkers = [];
 
       function initMap() {
         map = new google.maps.Map(document.getElementById('map'), {
@@ -65,7 +66,7 @@
                   return (a.spawnChance > b.spawnChance) ? -1 : 1;
                 });
                 spawns.forEach(function(spawn) {
-                  formattedContent += spawn.pokemon.name + "\t" + spawn.spawnChance + "<br>";
+                  formattedContent += spawn.pokedex.name + "\t" + spawn.spawnChance + "<br>";
                 });
 
                 formattedContent += '<button onClick="generateSpawns(' + habitatInfo.latitude + ', ' + habitatInfo.longitude + ')">Spawn here </button>';
@@ -81,6 +82,9 @@
 
           // get existing spawns
           renderSpawns(latLng.lat(), latLng.lng());
+
+          // render visited locations
+          renderVisited();
         });
       }
 
@@ -107,14 +111,41 @@
               var marker = new google.maps.Marker({
                 position: {lat: spawn.latitude, lng: spawn.longitude},
                 map: map,
-                icon: '/sprites/' + spawn.pokemon.id + '.png'
-                //label: spawn.pokemon.name
+                icon: '/sprites/' + spawn.pokemon.pokedex.id + '.png',
+                label: 'Lv. ' + spawn.pokemon.level
               });
               spawnMarkers.push(marker);
             });
           }
         };
         xmlHttp.open("GET", "../spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.send(null);
+      }
+
+      function renderVisited() {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            var visited = JSON.parse(xmlHttp.responseText);
+            console.log("visited", visited);
+
+            // remove old markers
+            visitedMarkers.forEach(function(visitedMarker) {
+              visitedMarker.setMap(null);
+            });
+            visitedMarkers = [];
+
+            visited.forEach(function(visit) {
+              var marker = new google.maps.Marker({
+                position: {lat: visit.lat, lng: visit.lng},
+                map: map,
+                icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+              });
+              visitedMarkers.push(marker);
+            });
+          }
+        };
+        xmlHttp.open("GET", "../visited", true); // true for asynchronous
         xmlHttp.send(null);
       }
 

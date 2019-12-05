@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.map
 
 enum class PointOfInterest(val searchTerm: String) {
     RESTAURANT("restaurant"),

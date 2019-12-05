@@ -1,7 +1,10 @@
 package io.lhuang.pokear
 
 import com.google.maps.model.LatLng
-import io.lhuang.pokear.MercatorProjection.Companion.latLngToWorldPoint
+import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
+import io.lhuang.pokear.map.MapData
+import io.lhuang.pokear.map.MapPoint
+import io.lhuang.pokear.map.MercatorProjection
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import java.awt.image.BufferedImage

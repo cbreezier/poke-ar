@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.habitat
 
 enum class Habitat(val description: String) {
     GRASS("Grass"),

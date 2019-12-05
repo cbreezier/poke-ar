@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.map
 
 data class WorldPoint(
         val x: Double,

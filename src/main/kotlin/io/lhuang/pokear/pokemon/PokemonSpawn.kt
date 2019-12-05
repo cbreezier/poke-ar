@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.pokemon
 
 import java.time.Instant
 

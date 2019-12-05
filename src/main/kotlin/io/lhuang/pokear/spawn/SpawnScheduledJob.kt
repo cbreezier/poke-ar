@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.spawn
 
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component

@@ -1,6 +1,12 @@
 package io.lhuang.pokear
 
 import com.google.maps.model.LatLng
+import io.lhuang.pokear.habitat.HabitatService
+import io.lhuang.pokear.map.MapService
+import io.lhuang.pokear.pokedex.PokedexDao
+import io.lhuang.pokear.pokemon.PokemonSpawn
+import io.lhuang.pokear.spawn.SpawnPoint
+import io.lhuang.pokear.spawn.SpawnService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -11,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController
 class SpawnResource(
         private val mapService: MapService,
         private val habitatService: HabitatService,
-        private val pokemonDao: PokemonDao,
+        private val pokedexDao: PokedexDao,
         private val spawnService: SpawnService
 ) {
 
@@ -25,7 +31,7 @@ class SpawnResource(
 
         val terrain = habitatService.getTerrain(map)
         val habitats = habitatService.calculateHabitat(map)
-        val spawns = habitats.flatMap { pokemonDao.getPokemonSpawns(it) }
+        val spawns = habitats.flatMap { pokedexDao.getPokemonSpawns(it) }
 
         return SpawnPoint(latitude, longitude, terrain, habitats, spawns.sortedByDescending { it.spawnChance })
     }
@@ -62,5 +68,10 @@ class SpawnResource(
         spawnService.visitLocation(location)
 
         return ResponseEntity.ok().build()
+    }
+
+    @GetMapping("/visited")
+    fun getVisitedLocations(): List<LatLng> {
+        return spawnService.getVisitedLocations()
     }
 }

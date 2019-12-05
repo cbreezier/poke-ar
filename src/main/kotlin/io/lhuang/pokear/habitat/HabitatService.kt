@@ -1,5 +1,6 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.habitat
 
+import io.lhuang.pokear.map.*
 import org.springframework.stereotype.Component
 import java.awt.Color
 import java.util.*

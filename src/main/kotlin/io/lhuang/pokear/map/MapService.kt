@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.map
 
 import com.google.maps.GeoApiContext
 import com.google.maps.PlacesApi

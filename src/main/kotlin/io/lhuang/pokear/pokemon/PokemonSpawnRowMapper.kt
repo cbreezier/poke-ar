@@ -1,5 +1,8 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.pokemon
 
+import io.lhuang.pokear.map.MercatorProjection
+import io.lhuang.pokear.map.WorldPoint
+import io.lhuang.pokear.pokedex.Pokedex
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
@@ -10,6 +13,8 @@ class PokemonSpawnRowMapper : RowMapper<PokemonSpawn> {
     override fun mapRow(rs: ResultSet, rowNum: Int): PokemonSpawn? {
         val id = rs.getLong("id")
         val name = rs.getString("name")
+        val hp = rs.getInt("hp")
+        val level = rs.getInt("level")
         val worldPoint = WorldPoint(
                 rs.getDouble("world_x"),
                 rs.getDouble("world_y")
@@ -19,7 +24,11 @@ class PokemonSpawnRowMapper : RowMapper<PokemonSpawn> {
         val endTime = Instant.ofEpochSecond(rs.getLong("end_timestamp"))
 
         return PokemonSpawn(
-                Pokemon(id, name),
+                Pokemon(
+                        Pokedex(id, name),
+                        hp,
+                        level
+                ),
                 latLng.lat,
                 latLng.lng,
                 startTime,

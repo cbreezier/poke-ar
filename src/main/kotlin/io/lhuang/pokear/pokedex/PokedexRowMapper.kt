@@ -1,15 +1,16 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.pokedex
 
+import io.lhuang.pokear.pokedex.Pokedex
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import java.sql.ResultSet
 
 @Component
-class PokemonRowMapper : RowMapper<Pokemon> {
-    override fun mapRow(rs: ResultSet, rowNum: Int): Pokemon? {
+class PokedexRowMapper : RowMapper<Pokedex> {
+    override fun mapRow(rs: ResultSet, rowNum: Int): Pokedex? {
         val id = rs.getLong("id")
         val name = rs.getString("name")
 
-        return Pokemon(id, name)
+        return Pokedex(id, name)
     }
 }
