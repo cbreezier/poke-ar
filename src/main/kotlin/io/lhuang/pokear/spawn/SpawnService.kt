@@ -65,9 +65,12 @@ class SpawnService(
 
                     if (pokedex != null) {
                         val pokemon = Pokemon(
+                                null,
                                 pokedex,
                                 100, // TODO
-                                Random.nextInt(100) // TODO
+                                Random.nextInt(100), // TODO
+                                Random.nextInt(100), // TODO
+                                null
                         )
                         spawnDao.addSpawn(worldPoint, pokemon, startTime, endTime)
                     }

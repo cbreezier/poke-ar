@@ -1,6 +1,5 @@
 package io.lhuang.pokear.pokedex
 
-import io.lhuang.pokear.pokedex.Pokedex
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 import java.sql.ResultSet

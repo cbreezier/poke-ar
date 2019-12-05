@@ -3,8 +3,8 @@ package io.lhuang.pokear
 import com.google.maps.model.LatLng
 import io.lhuang.pokear.habitat.HabitatService
 import io.lhuang.pokear.map.MapService
+import io.lhuang.pokear.model.PokemonSpawnModel
 import io.lhuang.pokear.pokedex.PokedexDao
-import io.lhuang.pokear.pokemon.PokemonSpawn
 import io.lhuang.pokear.spawn.SpawnPoint
 import io.lhuang.pokear.spawn.SpawnService
 import org.springframework.http.ResponseEntity
@@ -40,10 +40,11 @@ class SpawnResource(
     fun getSpawns(
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
-    ): List<PokemonSpawn> {
+    ): List<PokemonSpawnModel> {
         val center = LatLng(latitude, longitude)
 
         return spawnService.getSpawns(center)
+                .map { PokemonSpawnModel(it) }
     }
 
     @PostMapping("/spawn")

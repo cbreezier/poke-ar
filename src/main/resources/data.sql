@@ -1,3 +1,5 @@
+INSERT INTO users (name) VALUES ('Ash Ketchum');
+
 INSERT INTO pokedex (name) VALUES ('Bulbasaur');
 INSERT INTO pokedex (name) VALUES ('Ivysaur');
 INSERT INTO pokedex (name) VALUES ('Venusaur');
