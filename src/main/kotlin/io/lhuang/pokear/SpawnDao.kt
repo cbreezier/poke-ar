@@ -7,7 +7,8 @@ import java.time.Instant
 @Component
 class SpawnDao(
         private val jdbcTemplate: JdbcTemplate,
-        private val pokemonSpawnRowMapper: PokemonSpawnRowMapper
+        private val pokemonSpawnRowMapper: PokemonSpawnRowMapper,
+        private val worldPointRowMapper: WorldPointRowMapper
 ) {
     fun addSpawn(worldPoint: WorldPoint, pokemon: Pokemon, startTime: Instant, endTime: Instant) {
         jdbcTemplate.update("insert into spawns (world_x, world_y, pokemon_id, start_timestamp, end_timestamp) values (${worldPoint.x}, ${worldPoint.y}, ${pokemon.id}, ${startTime.epochSecond}, ${endTime.epochSecond})")
@@ -23,5 +24,14 @@ class SpawnDao(
 
     fun cleanupSpawns(now: Instant) {
         jdbcTemplate.update("delete from spawns where end_timestamp < ${now.epochSecond}")
+    }
+
+    fun visitLocation(location: WorldPoint, now: Instant) {
+        jdbcTemplate.update("insert into visited_locations (world_x, world_y, timestamp) values (${location.x}, ${location.y}, ${now.epochSecond}) on conflict (world_x, world_y) do update set timestamp = ${now.epochSecond}")
+    }
+
+    // TODO respect timestamp
+    fun getVisitedLocations(): List<WorldPoint> {
+        return jdbcTemplate.query("select world_x, world_y from visited_locations", worldPointRowMapper)
     }
 }

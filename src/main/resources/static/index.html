@@ -76,9 +76,18 @@
             xmlHttp.send(null);
           });
 
+          // log visited location
+          visitLocation(latLng.lat(), latLng.lng());
+
           // get existing spawns
           renderSpawns(latLng.lat(), latLng.lng());
         });
+      }
+
+      function visitLocation(latitude, longitude) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("POST", "../visit?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.send(null);
       }
 
       function renderSpawns(latitude, longitude) {

@@ -1,6 +1,8 @@
 package io.lhuang.pokear
 
 import com.google.maps.model.LatLng
+import io.lhuang.pokear.MercatorProjection.Companion.latLngToWorldPoint
+import io.lhuang.pokear.MercatorProjection.Companion.worldPointToLatLng
 import org.springframework.stereotype.Component
 import java.time.Duration
 import java.time.Instant
@@ -26,7 +28,13 @@ class SpawnService(
     }
 
     fun getSpawns(center: LatLng): List<PokemonSpawn> {
-        return spawnDao.getSpawns(MercatorProjection.latLngToWorldPoint(center), TILE_WIDTH, TILE_HEIGHT, Instant.now())
+        return spawnDao.getSpawns(latLngToWorldPoint(center), TILE_WIDTH, TILE_HEIGHT, Instant.now())
+    }
+
+    fun spawnPokemon(num: Int) {
+        spawnDao.getVisitedLocations()
+                .map { worldPointToLatLng(it) }
+                .forEach { spawnPokemon(it, num) }
     }
 
     fun spawnPokemon(center: LatLng, num: Int) {
@@ -51,6 +59,21 @@ class SpawnService(
                         spawnDao.addSpawn(worldPoint, pokemon, startTime, endTime)
                     }
                 }
+    }
+
+    fun visitLocation(location: LatLng) {
+        val worldPoint = latLngToWorldPoint(location)
+        val discreteLocation = WorldPoint(
+                discretify(worldPoint.x, TILE_WIDTH),
+                discretify(worldPoint.y, TILE_HEIGHT)
+        )
+
+        spawnDao.visitLocation(discreteLocation, Instant.now())
+    }
+
+    private fun discretify(num: Double, discreteInterval: Double): Double {
+        val quotient = (num / discreteInterval).toInt()
+        return discreteInterval * quotient
     }
 
     private fun <T> weightedRandomBy(inputs: List<T>, by: (T) -> Double): T? {

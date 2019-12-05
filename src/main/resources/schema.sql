@@ -28,4 +28,15 @@ create table spawns(
 
   PRIMARY KEY (id),
   FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)
-)
+);
+
+drop table if exists visited_locations cascade;
+create table visited_locations(
+                     id SERIAL,
+                     world_x DOUBLE PRECISION,
+                     world_y DOUBLE PRECISION,
+                     timestamp BIGINT,
+
+                     PRIMARY KEY (id),
+                     UNIQUE (world_x, world_y)
+);

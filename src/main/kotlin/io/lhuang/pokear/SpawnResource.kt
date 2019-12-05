@@ -51,4 +51,16 @@ class SpawnResource(
 
         return ResponseEntity.ok().build()
     }
+
+    @PostMapping("/visit")
+    fun visitLocation(
+            @RequestParam(value = "lat") latitude: Double,
+            @RequestParam(value = "lng") longitude: Double
+    ): ResponseEntity<Void> {
+        val location = LatLng(latitude, longitude)
+
+        spawnService.visitLocation(location)
+
+        return ResponseEntity.ok().build()
+    }
 }
