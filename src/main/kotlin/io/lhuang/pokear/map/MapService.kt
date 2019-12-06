@@ -54,6 +54,8 @@ class MapService {
     }
 
     fun getNearby(latLng: LatLng, searchTerm: String, radiusMeters: Int): List<LatLng> {
+        return emptyList() // disable nearby search for now - too expensive
+
         val searchResults = PlacesApi.nearbySearchQuery(apiContext.value, latLng)
                 .keyword(searchTerm)
                 .radius(radiusMeters)
