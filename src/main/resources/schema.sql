@@ -7,15 +7,31 @@ create table users(
   PRIMARY KEY (id)
 );
 
+drop type if exists item_type cascade;
+create type item_type as enum (
+  'POKE_BALL',
+  'GREAT_BALL',
+  'ULTRA_BALL',
+  'MASTER_BALL',
+  'STARTER_BALL',
+  'BOND_BALL',
+  'POTION',
+  'SUPER_POTION',
+  'HYPER_POTION',
+  'MAX_POTION',
+  'REVIVE'
+);
+
 drop table if exists items cascade;
 create table items(
   id SERIAL,
-  item_type VARCHAR,
-  count INT,
+  item_type item_type,
+  qty INT,
   owner_id INT,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (owner_id) REFERENCES users (id)
+  FOREIGN KEY (owner_id) REFERENCES users (id),
+  UNIQUE (item_type, owner_id)
 );
 
 drop table if exists pokedex cascade;
