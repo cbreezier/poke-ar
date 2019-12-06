@@ -1,9 +1,21 @@
 drop table if exists users cascade;
 create table users(
-                    id SERIAL,
-                    name VARCHAR,
+  id SERIAL,
+  name VARCHAR,
+  money INT,
 
-                    PRIMARY KEY (id)
+  PRIMARY KEY (id)
+);
+
+drop table if exists items cascade;
+create table items(
+  id SERIAL,
+  item_type VARCHAR,
+  count INT,
+  owner_id INT,
+
+  PRIMARY KEY (id),
+  FOREIGN KEY (owner_id) REFERENCES users (id)
 );
 
 drop table if exists pokedex cascade;

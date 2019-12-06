@@ -1,4 +1,4 @@
-INSERT INTO users (name) VALUES ('Ash Ketchum');
+INSERT INTO users (name, money) VALUES ('Ash Ketchum', 0);
 
 INSERT INTO pokedex (name) VALUES ('Bulbasaur');
 INSERT INTO pokedex (name) VALUES ('Ivysaur');
