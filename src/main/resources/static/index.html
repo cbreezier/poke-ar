@@ -115,6 +115,14 @@
                 label: 'Lv. ' + spawn.pokemon.level
               });
               spawnMarkers.push(marker);
+
+              // add info window
+              var infoWindow = new google.maps.InfoWindow({
+                content: '<button onClick="catchPokemon(' + spawn.pokemon.id + ')">Catch!</button>'
+              });
+              marker.addListener('click', function() {
+                infoWindow.open(map, marker);
+              });
             });
           }
         };
@@ -159,6 +167,20 @@
           }
         };
         xmlHttp.open("POST", "../spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.send(null);
+      }
+
+      function catchPokemon(pokemonId) {
+        console.log('Catching pokemon', pokemonId);
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            var result = JSON.parse(xmlHttp.responseText);
+            console.log(result);
+          }
+        };
+        xmlHttp.open("POST", "../catch/" + pokemonId + "?pokeballType=POKE_BALL", true); // true for asynchronous
         xmlHttp.send(null);
       }
     </script>

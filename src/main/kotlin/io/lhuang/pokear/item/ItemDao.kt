@@ -1,6 +1,5 @@
 package io.lhuang.pokear.item
 
-import io.lhuang.pokear.user.User
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Component
 
@@ -15,5 +14,9 @@ class ItemDao(
 
     fun addItem(userId: Long, item: Item) {
         jdbcTemplate.update("insert into items (item_type, qty, owner_id) values ('${item.type}', ${item.count}, ${userId}) on conflict (item_type, owner_id) do update set qty = items.qty + ${item.count}")
+    }
+
+    fun removeItem(userId: Long, item: Item) {
+        jdbcTemplate.update("update items set qty = items.qty - ${item.count}")
     }
 }
