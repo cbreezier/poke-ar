@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=admin
+      - DB_DATABASE=postgres
+    ports:
+      - "${HOST_PORT:-9002}:8080"
+      - "6005:5005"
+    command: java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=0.0.0.0:5005 -jar /app.jar
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+    volumes:
+      - poke-ar-data:/var/lib/postgresql/data
+
+volumes:
+  poke-ar-data:
+    name: poke-ar-data
+    external: true
