@@ -6,6 +6,9 @@ import java.awt.Color
 import java.util.*
 import kotlin.collections.ArrayList
 
+/**
+ * Calculate the terrain and habitat of points on a map.
+ */
 @Component
 class HabitatService(
         val mapService: MapService
@@ -26,6 +29,9 @@ class HabitatService(
         )
     }
 
+    /**
+     * Calculate the habitat of the center point of a map tile.
+     */
     fun calculateHabitat(map: MapData): List<Habitat> {
         return calculateHabitat(map, MapPoint(map.width / 2, map.height / 2))
     }

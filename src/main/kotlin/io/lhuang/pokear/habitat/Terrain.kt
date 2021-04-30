@@ -2,6 +2,10 @@ package io.lhuang.pokear.habitat
 
 import java.awt.Color
 
+/**
+ * Terrain is about the type of terrain that is represented by a certain color of pixel
+ * from the map data.
+ */
 enum class Terrain(val type: String, val color: Color) {
     GRASS("grass", Color(0xC9EEC9)),
     FOREST("forest", Color(0xB6E2B6)),

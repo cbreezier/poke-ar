@@ -4,6 +4,17 @@ import com.google.maps.model.LatLng
 import java.lang.Math.PI
 import kotlin.math.*
 
+/**
+ * The world is a globe, but our maps are 2D images.
+ *
+ * It's easier to work with maps as if the entire world was a big flat rectangle. The Mercator projection
+ * is a cylindrical map projection which is a reasonable approximation of a flattened globe.
+ *
+ * Google maps uses the Mercator projection, so this class helps convert between lat/lng (globe coordinates) to x/y
+ * [WorldPoint]s.
+ *
+ * https://developers.google.com/maps/documentation/javascript/coordinates
+ */
 class MercatorProjection {
     companion object {
         const val MERCATOR_RANGE = 256

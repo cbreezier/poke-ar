@@ -1,5 +1,14 @@
 package io.lhuang.pokear.habitat
 
+/**
+ * A habitat is a general categorisation of a "type" of location. It is more complex than the
+ * terrain which is literally a color-mapping of the pixel.
+ *
+ * A habitat is derived from the type of terrain as well as surrounding terrain and points of interest.
+ *
+ * Each pixel on a map can be thought of as "being" a type of terrain and "belonging" to one or more
+ * types of habitat.
+ */
 enum class Habitat(val description: String) {
     GRASS("Grass"),
     GARDEN("Grass + garden nearby"),

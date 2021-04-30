@@ -28,6 +28,8 @@ class MapService {
     }
 
     fun getMap(latLng: LatLng): MapData {
+        // Our project operates at zoom level 15. However, since we can request a 512x512 tile (which is technically
+        // 4 tiles at a given zoom level) we ask for zoom level 16. This gives us more resolution to work with.
         val imageResult = StaticMapsApi.newRequest(apiContext.value, Size(512, 512))
                 .center(latLng)
                 .zoom(16)
