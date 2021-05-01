@@ -149,11 +149,11 @@ class HabitatService(
         return (dx * dx) + (dy * dy)
     }
 
-    private fun isNearby(map: MapTile, mapPoint: MapPoint, pointOfInterest: PointOfInterest, distanceMeters: Int, numNearbyThreshold: Int): Boolean {
+    private fun isNearby(map: MapTile, mapPoint: MapPoint, pointOfInterest: PointOfInterest, distancePixels: Int, numNearbyThreshold: Int): Boolean {
         val numNearby = map.places[pointOfInterest]
                 ?.map { MercatorProjection.latLngToMapPoint(map, it) }
                 ?.map { distance2(it, mapPoint) }
-                ?.filter { it <= distanceMeters * distanceMeters }
+                ?.filter { it <= distancePixels * distancePixels }
                 ?.count()
                 ?: 0
         return numNearby >= numNearbyThreshold
