@@ -11,6 +11,7 @@ import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToLatLng
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.ByteArrayInputStream
+import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 import kotlin.math.cos
 import kotlin.math.pow
@@ -31,7 +32,14 @@ class MapService {
         }
     }
 
+    // TODO in-memory cache is not scalable
+    private val mapCache = ConcurrentHashMap<TilePosition, MapTile>()
+
     fun getMap(position: TilePosition): MapTile {
+        return mapCache.getOrPut(position) { loadMap(position) }
+    }
+
+    private fun loadMap(position: TilePosition): MapTile {
         val worldPoint = tilePositionToWorldPoint(position)
         val centerWorldPoint = WorldPoint(
                 worldPoint.x + TILE_WORLD_WIDTH / 2,
@@ -70,8 +78,6 @@ class MapService {
     }
 
     fun getNearby(latLng: LatLng, searchTerm: String, radiusMeters: Int): List<LatLng> {
-        return emptyList() // disable nearby search for now - too expensive
-
         val searchResults = PlacesApi.nearbySearchQuery(apiContext.value, latLng)
                 .keyword(searchTerm)
                 .radius(radiusMeters)
