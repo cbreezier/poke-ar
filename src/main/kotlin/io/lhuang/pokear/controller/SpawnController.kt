@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.controller
 
 import com.google.maps.model.LatLng
 import io.lhuang.pokear.habitat.HabitatService
@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class SpawnResource(
+class SpawnController(
         private val mapService: MapService,
         private val habitatService: HabitatService,
         private val pokedexDao: PokedexDao,

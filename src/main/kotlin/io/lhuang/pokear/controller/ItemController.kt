@@ -1,4 +1,4 @@
-package io.lhuang.pokear
+package io.lhuang.pokear.controller
 
 import io.lhuang.pokear.item.Bag
 import io.lhuang.pokear.item.Item
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ItemResource(
+class ItemController(
         val itemService: ItemService
 ) {
     @GetMapping("/user/{userId}/item")
