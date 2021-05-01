@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.ByteArrayInputStream
 import javax.imageio.ImageIO
+import kotlin.math.cos
+import kotlin.math.pow
 
 @Component
 class MapService {
@@ -50,8 +52,13 @@ class MapService {
 
         val image = ImageIO.read(ByteArrayInputStream(imageResult.imageData))
 
+        // https://gis.stackexchange.com/questions/7430/what-ratio-scales-do-google-maps-zoom-levels-correspond-to
+        val metersPerPixel = 156543.03392 * cos(latLng.lat * Math.PI / 180) / (1 shl (TILE_ZOOM_LEVEL + 1))
+        // In Sydney this is about 500m
+        val metersRadius = metersPerPixel * 256
+
         val places = PointOfInterest.values()
-                .map { Pair(it, getNearby(latLng, it.searchTerm, 100)) /* TODO how many meters? */ }
+                .map { Pair(it, getNearby(latLng, it.searchTerm, metersRadius.toInt())) }
                 .toMap()
 
         return MapTile(
