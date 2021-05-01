@@ -11,12 +11,10 @@ import io.lhuang.pokear.pokedex.PokedexDao
 import io.lhuang.pokear.spawn.SpawnPoint
 import io.lhuang.pokear.spawn.SpawnService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/spawns")
 class SpawnController(
         private val mapService: MapService,
         private val habitatService: HabitatService,
@@ -24,7 +22,7 @@ class SpawnController(
         private val spawnService: SpawnService
 ) {
 
-    @GetMapping("/spawnInfo")
+    @GetMapping("/info")
     fun getSpawnInfo(
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
@@ -42,7 +40,7 @@ class SpawnController(
         return SpawnPoint(latitude, longitude, terrain, habitats, spawns.sortedByDescending { it.spawnChance })
     }
 
-    @GetMapping("/spawn")
+    @GetMapping
     fun getSpawns(
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
@@ -53,7 +51,7 @@ class SpawnController(
                 .map { PokemonSpawnModel(it) }
     }
 
-    @PostMapping("/spawn")
+    @PostMapping
     fun spawnPokemon(
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double

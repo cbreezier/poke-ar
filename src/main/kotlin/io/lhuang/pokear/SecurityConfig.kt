@@ -16,13 +16,15 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
     override fun configure(http: HttpSecurity) {
         http
                 .authorizeRequests {
-                            it.antMatchers(
+                    it
+                            .antMatchers(
                                     "/", // TODO decide what we actually want to allow
                                     "/error",
                                     "/webjars/**"
                             ).permitAll()
                             .anyRequest().authenticated()
                 }
+                .csrf().disable()
                 .exceptionHandling { e ->
                     e.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
                 }

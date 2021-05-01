@@ -73,7 +73,7 @@
                 infoWindow.setContent(formattedContent);
               }
             };
-            xmlHttp.open("GET", "../spawnInfo?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
+            xmlHttp.open("GET", "../spawns/info?lat=" + latLng.lat() + "&lng=" + latLng.lng(), true); // true for asynchronous
             xmlHttp.send(null);
           });
 
@@ -90,7 +90,7 @@
 
       function visitLocation(latitude, longitude) {
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open("POST", "../visit?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.open("POST", "../spawns/visit?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
         xmlHttp.send(null);
       }
 
@@ -126,7 +126,7 @@
             });
           }
         };
-        xmlHttp.open("GET", "../spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.open("GET", "../spawns?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
         xmlHttp.send(null);
       }
 
@@ -153,7 +153,7 @@
             });
           }
         };
-        xmlHttp.open("GET", "../visited", true); // true for asynchronous
+        xmlHttp.open("GET", "../spawns/visited", true); // true for asynchronous
         xmlHttp.send(null);
       }
 
@@ -166,7 +166,7 @@
             renderSpawns(latitude, longitude);
           }
         };
-        xmlHttp.open("POST", "../spawn?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
+        xmlHttp.open("POST", "../spawns?lat=" + latitude + "&lng=" + longitude, true); // true for asynchronous
         xmlHttp.send(null);
       }
 
@@ -180,7 +180,7 @@
             console.log(result);
           }
         };
-        xmlHttp.open("POST", "../catch/" + pokemonId + "?pokeballType=POKE_BALL", true); // true for asynchronous
+        xmlHttp.open("POST", "../pokemon/catch/" + pokemonId + "?pokeballType=POKE_BALL", true); // true for asynchronous
         xmlHttp.send(null);
       }
     </script>
