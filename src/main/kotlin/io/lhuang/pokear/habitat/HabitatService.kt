@@ -29,14 +29,7 @@ class HabitatService(
         )
     }
 
-    /**
-     * Calculate the habitat of the center point of a map tile.
-     */
-    fun calculateHabitat(map: MapData): List<Habitat> {
-        return calculateHabitat(map, MapPoint(map.width / 2, map.height / 2))
-    }
-
-    fun calculateHabitat(map: MapData, mapPoint: MapPoint): List<Habitat> {
+    fun calculateHabitat(map: MapTile, mapPoint: MapPoint): List<Habitat> {
         val terrain = getTerrain(map, mapPoint)
         val habitats: MutableList<Habitat> = ArrayList()
 
@@ -78,7 +71,7 @@ class HabitatService(
         return habitats
     }
 
-    private fun countTiles(map: MapData, startingPosition: MapPoint, searchRadius: Int, terrainType: (Terrain?) -> Boolean): Int {
+    private fun countTiles(map: MapTile, startingPosition: MapPoint, searchRadius: Int, terrainType: (Terrain?) -> Boolean): Int {
         val seen: MutableSet<MapPoint> = HashSet()
         val queue: PriorityQueue<MapPoint> = PriorityQueue{
             p1: MapPoint, p2: MapPoint -> distance2(p1, startingPosition).compareTo(distance2(p2, startingPosition))
@@ -105,7 +98,7 @@ class HabitatService(
 
             for (dir in CARDINALS) {
                 val nextPosition = MapPoint(position.x + dir.x, position.y + dir.y)
-                if (nextPosition.x >= 0 && nextPosition.x < map.width && nextPosition.y >= 0 && nextPosition.y < map.height) {
+                if (nextPosition.x >= 0 && nextPosition.x < map.imageData.width && nextPosition.y >= 0 && nextPosition.y < map.imageData.height) {
                     queue.offer(nextPosition)
                 }
             }
@@ -114,7 +107,7 @@ class HabitatService(
         return terrainCount
     }
 
-    private fun waterBodyType(map: MapData, startingPosition: MapPoint): Habitat {
+    private fun waterBodyType(map: MapTile, startingPosition: MapPoint): Habitat {
         val seen: MutableSet<MapPoint> = HashSet()
         val queue: Queue<MapPoint> = LinkedList()
         queue.offer(startingPosition)
@@ -131,7 +124,7 @@ class HabitatService(
 
             for (dir in CARDINALS) {
                 val nextPosition = MapPoint(position.x + dir.x, position.y + dir.y)
-                if (nextPosition.x >= 0 && nextPosition.x < map.width && nextPosition.y >= 0 && nextPosition.y < map.height) {
+                if (nextPosition.x >= 0 && nextPosition.x < map.imageData.width && nextPosition.y >= 0 && nextPosition.y < map.imageData.height) {
                     queue.offer(nextPosition)
                 }
             }
@@ -146,7 +139,7 @@ class HabitatService(
         }
     }
 
-    private fun isCloseTo(map: MapData, mapPoint: MapPoint, terrainType: (Terrain?) -> Boolean): Boolean {
+    private fun isCloseTo(map: MapTile, mapPoint: MapPoint, terrainType: (Terrain?) -> Boolean): Boolean {
         return countTiles(map, mapPoint, SHORT_DISTANCE, terrainType) > 0
     }
 
@@ -156,7 +149,7 @@ class HabitatService(
         return (dx * dx) + (dy * dy)
     }
 
-    private fun isNearby(map: MapData, mapPoint: MapPoint, pointOfInterest: PointOfInterest, distanceMeters: Int, numNearbyThreshold: Int): Boolean {
+    private fun isNearby(map: MapTile, mapPoint: MapPoint, pointOfInterest: PointOfInterest, distanceMeters: Int, numNearbyThreshold: Int): Boolean {
         val numNearby = map.places[pointOfInterest]
                 ?.map { MercatorProjection.latLngToMapPoint(map, it) }
                 ?.map { distance2(it, mapPoint) }
@@ -166,11 +159,7 @@ class HabitatService(
         return numNearby >= numNearbyThreshold
     }
 
-    fun getTerrain(map: MapData): Terrain? {
-        return getTerrain(map, MapPoint(map.width / 2, map.height / 2))
-    }
-
-    fun getTerrain(map: MapData, mapPoint: MapPoint): Terrain? {
+    fun getTerrain(map: MapTile, mapPoint: MapPoint): Terrain? {
         val pixel = Color(map.imageData.getRGB(mapPoint.x, mapPoint.y))
 
         return Terrain.fromColor(pixel)

@@ -1,13 +1,13 @@
 package io.lhuang.pokear.spawn
 
 import com.google.maps.model.LatLng
-import io.lhuang.pokear.map.WorldPoint
-import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
-import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToLatLng
 import io.lhuang.pokear.habitat.HabitatService
 import io.lhuang.pokear.map.MapPoint
 import io.lhuang.pokear.map.MapService
 import io.lhuang.pokear.map.MercatorProjection
+import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
+import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToTilePosition
+import io.lhuang.pokear.map.TilePosition
 import io.lhuang.pokear.pokedex.PokedexDao
 import io.lhuang.pokear.pokemon.Pokemon
 import io.lhuang.pokear.pokemon.PokemonSpawn
@@ -49,12 +49,11 @@ class SpawnService(
 
     fun spawnPokemon(num: Int) {
         spawnDao.getVisitedLocations()
-                .map { worldPointToLatLng(it) }
                 .forEach { spawnPokemon(it, num) }
     }
 
-    fun spawnPokemon(center: LatLng, num: Int) {
-        val map = mapService.getMap(center)
+    fun spawnPokemon(position: TilePosition, num: Int) {
+        val map = mapService.getMap(position)
 
         (0..num).toList()
                 .forEach {
@@ -87,22 +86,15 @@ class SpawnService(
 
     fun visitLocation(location: LatLng) {
         val worldPoint = latLngToWorldPoint(location)
-        val discreteLocation = WorldPoint(
-                discretify(worldPoint.x, TILE_WIDTH),
-                discretify(worldPoint.y, TILE_HEIGHT)
-        )
+        val tilePosition = worldPointToTilePosition(worldPoint)
 
-        spawnDao.visitLocation(discreteLocation, Instant.now())
+        spawnDao.visitLocation(tilePosition, Instant.now())
     }
 
     fun getVisitedLocations(): List<LatLng> {
         return spawnDao.getVisitedLocations()
+                .map { MercatorProjection.tilePositionToWorldPoint(it) }
                 .map { MercatorProjection.worldPointToLatLng(it) }
-    }
-
-    private fun discretify(num: Double, discreteInterval: Double): Double {
-        val quotient = (num / discreteInterval).toInt()
-        return discreteInterval * quotient
     }
 
     private fun <T> weightedRandomBy(inputs: List<T>, by: (T) -> Double): T? {

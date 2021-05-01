@@ -6,6 +6,8 @@ import com.google.maps.StaticMapsApi
 import com.google.maps.StaticMapsRequest
 import com.google.maps.model.LatLng
 import com.google.maps.model.Size
+import io.lhuang.pokear.map.MercatorProjection.Companion.tilePositionToWorldPoint
+import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToLatLng
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.ByteArrayInputStream
@@ -27,12 +29,19 @@ class MapService {
         }
     }
 
-    fun getMap(latLng: LatLng): MapData {
-        // Our project operates at zoom level 15. However, since we can request a 512x512 tile (which is technically
-        // 4 tiles at a given zoom level) we ask for zoom level 16. This gives us more resolution to work with.
-        val imageResult = StaticMapsApi.newRequest(apiContext.value, Size(512, 512))
+    fun getMap(position: TilePosition): MapTile {
+        val worldPoint = tilePositionToWorldPoint(position)
+        val centerWorldPoint = WorldPoint(
+                worldPoint.x + TILE_WORLD_WIDTH / 2,
+                worldPoint.y + TILE_WORLD_WIDTH / 2
+        )
+        val latLng = worldPointToLatLng(centerWorldPoint)
+
+        // Since we can request a 512x512 tile (which is technically 4 tiles at a given zoom level) we ask for
+        // a zoom level of one higher. This effectively gives us a full tile at the correct zoom level, with higher resolution.
+        val imageResult = StaticMapsApi.newRequest(apiContext.value, Size(TILE_PIXEL_WIDTH, TILE_PIXEL_WIDTH))
                 .center(latLng)
-                .zoom(16)
+                .zoom(TILE_ZOOM_LEVEL + 1)
                 .format(StaticMapsRequest.ImageFormat.png)
                 .custom("style", "feature:all|element:labels|visibility:off")
                 // Currently the Java api doesn't support multiple custom styles :fistshake:
@@ -45,11 +54,9 @@ class MapService {
                 .map { Pair(it, getNearby(latLng, it.searchTerm, 100)) /* TODO how many meters? */ }
                 .toMap()
 
-        return MapData(
-                latLng,
-                512,
-                512,
-                16,
+        return MapTile(
+                position,
+                TILE_ZOOM_LEVEL + 1,
                 image,
                 places
         )

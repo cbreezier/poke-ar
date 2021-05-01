@@ -43,30 +43,44 @@ class MercatorProjection {
             return LatLng(lat, lng)
         }
 
-        fun latLngToMapPoint(map: MapData, latLng: LatLng): MapPoint {
-            return worldPointToMapPoint(map, latLngToWorldPoint(latLng))
-        }
-
-        fun mapPointToLatLng(map: MapData, mapPoint: MapPoint): LatLng {
-            return worldPointToLatLng(mapPointToWorldPoint(map, mapPoint))
-        }
-
-        fun mapPointToWorldPoint(map: MapData, mapPoint: MapPoint): WorldPoint {
-            val scale = 2.0.pow(map.zoom.toDouble())
-            val centerWorldPoint = latLngToWorldPoint(map.center)
-            return WorldPoint(
-                    centerWorldPoint.x + (mapPoint.x - map.width / 2) / scale,
-                    centerWorldPoint.y + (mapPoint.y - map.height / 2) / scale
+        fun worldPointToTilePosition(worldPoint: WorldPoint): TilePosition {
+            return TilePosition(
+                    (worldPoint.x / TILE_WORLD_WIDTH).toInt(),
+                    (worldPoint.y / TILE_WORLD_WIDTH).toInt()
             )
         }
 
-        fun worldPointToMapPoint(map: MapData, worldPoint: WorldPoint): MapPoint {
+        fun tilePositionToWorldPoint(tilePosition: TilePosition): WorldPoint {
+            return WorldPoint(
+                    tilePosition.x * TILE_WORLD_WIDTH,
+                    tilePosition.y * TILE_WORLD_WIDTH
+            )
+        }
+
+        fun latLngToMapPoint(map: MapTile, latLng: LatLng): MapPoint {
+            return worldPointToMapPoint(map, latLngToWorldPoint(latLng))
+        }
+
+        fun mapPointToLatLng(map: MapTile, mapPoint: MapPoint): LatLng {
+            return worldPointToLatLng(mapPointToWorldPoint(map, mapPoint))
+        }
+
+        fun mapPointToWorldPoint(map: MapTile, mapPoint: MapPoint): WorldPoint {
             val scale = 2.0.pow(map.zoom.toDouble())
-            val centerWorldPoint = latLngToWorldPoint(map.center)
+            val topLeftWorldPoint = tilePositionToWorldPoint(map.position)
+            return WorldPoint(
+                    topLeftWorldPoint.x + (mapPoint.x) / scale,
+                    topLeftWorldPoint.y + (mapPoint.y) / scale
+            )
+        }
+
+        fun worldPointToMapPoint(map: MapTile, worldPoint: WorldPoint): MapPoint {
+            val scale = 2.0.pow(map.zoom.toDouble())
+            val topLeftWorldPoint = tilePositionToWorldPoint(map.position)
 
             return MapPoint(
-                    ((worldPoint.x - centerWorldPoint.x) * scale).toInt() + map.width / 2,
-                    ((worldPoint.y - centerWorldPoint.y) * scale).toInt() + map.height / 2
+                    ((worldPoint.x - topLeftWorldPoint.x) * scale).toInt(),
+                    ((worldPoint.y - topLeftWorldPoint.y) * scale).toInt()
             )
         }
 

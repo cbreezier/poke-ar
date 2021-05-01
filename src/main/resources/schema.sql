@@ -83,10 +83,10 @@ create table spawns(
 drop table if exists visited_locations cascade;
 create table visited_locations(
   id SERIAL,
-  world_x DOUBLE PRECISION,
-  world_y DOUBLE PRECISION,
+  tile_x INTEGER,
+  tile_y INTEGER,
   timestamp BIGINT,
 
   PRIMARY KEY (id),
-  UNIQUE (world_x, world_y)
+  UNIQUE (tile_x, tile_y)
 );

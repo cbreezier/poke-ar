@@ -1,7 +1,8 @@
 package io.lhuang.pokear.spawn
 
+import io.lhuang.pokear.map.TilePosition
+import io.lhuang.pokear.map.TilePositionRowMapper
 import io.lhuang.pokear.map.WorldPoint
-import io.lhuang.pokear.map.WorldPointRowMapper
 import io.lhuang.pokear.pokemon.Pokemon
 import io.lhuang.pokear.pokemon.PokemonSpawn
 import io.lhuang.pokear.pokemon.PokemonSpawnRowMapper
@@ -13,7 +14,7 @@ import java.time.Instant
 class SpawnDao(
         private val jdbcTemplate: JdbcTemplate,
         private val pokemonSpawnRowMapper: PokemonSpawnRowMapper,
-        private val worldPointRowMapper: WorldPointRowMapper
+        private val tilePositionRowMapper: TilePositionRowMapper
 ) {
     fun addSpawn(worldPoint: WorldPoint, pokemon: Pokemon, startTime: Instant, endTime: Instant) {
         jdbcTemplate.update("""
@@ -61,12 +62,12 @@ class SpawnDao(
         jdbcTemplate.update("delete from spawns where end_timestamp < ${now.epochSecond}")
     }
 
-    fun visitLocation(location: WorldPoint, now: Instant) {
-        jdbcTemplate.update("insert into visited_locations (world_x, world_y, timestamp) values (${location.x}, ${location.y}, ${now.epochSecond}) on conflict (world_x, world_y) do update set timestamp = ${now.epochSecond}")
+    fun visitLocation(location: TilePosition, now: Instant) {
+        jdbcTemplate.update("insert into visited_locations (tile_x, tile_y, timestamp) values (${location.x}, ${location.y}, ${now.epochSecond}) on conflict (tile_x, tile_y) do update set timestamp = ${now.epochSecond}")
     }
 
     // TODO respect timestamp
-    fun getVisitedLocations(): List<WorldPoint> {
-        return jdbcTemplate.query("select world_x, world_y from visited_locations", worldPointRowMapper)
+    fun getVisitedLocations(): List<TilePosition> {
+        return jdbcTemplate.query("select tile_x, tile_y from visited_locations", tilePositionRowMapper)
     }
 }
