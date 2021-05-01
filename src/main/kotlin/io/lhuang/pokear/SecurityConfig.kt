@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.web.authentication.HttpStatusEntryPoint
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint
 import org.springframework.web.bind.annotation.RestController
 
 /**
@@ -26,7 +27,9 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 }
                 .csrf().disable()
                 .exceptionHandling { e ->
-                    e.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    // TODO return 403 for rest apis and redirect for html files
+                    // e.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
+                    e.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/oauth2/authorization/github"))
                 }
                 .oauth2Login()
     }
