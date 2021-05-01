@@ -29,6 +29,8 @@ dependencies {
 	// implementation("org.slf4j:slf4j-simple:1.7.25") {
 	//	exclude("logback-classic")
 	//}
+
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
 }
 
 tasks.withType<Test> {

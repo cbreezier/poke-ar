@@ -5,6 +5,13 @@ spring:
     password: ${DB_PASSWORD:admin}
     initialization-mode: always
     schema: "classpath:/schema.sql"
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: 53ff8705e4be94320cbc
+            clientSecret: a8a101f8419e27a92dd8f84a5dcf25593a2dadae
 server:
   port: 8080
   tomcat:
