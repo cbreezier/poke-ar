@@ -10,8 +10,8 @@ spring:
       client:
         registration:
           github:
-            clientId: 53ff8705e4be94320cbc
-            clientSecret: a8a101f8419e27a92dd8f84a5dcf25593a2dadae
+            clientId: "${GITHUB_OAUTH_CLIENT_ID}"
+            clientSecret: "${GITHUB_OAUTH_SECRET}"
 server:
   port: 8080
   tomcat:
@@ -20,4 +20,4 @@ server:
   error:
     include-message: always
 maps:
-  apiKey: "AIzaSyDAyURyzuAi38Am-nkzYCAao52ZhEWDu10"
+  apiKey: "${MAPS_API_KEY}"
