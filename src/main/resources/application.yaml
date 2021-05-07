@@ -5,6 +5,9 @@ spring:
     password: ${DB_PASSWORD:admin}
     initialization-mode: always
     schema: "classpath:/schema.sql"
+  flyway:
+    enabled: true
+    baselineOnMigrate: true
   security:
     oauth2:
       client:

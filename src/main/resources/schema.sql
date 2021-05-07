@@ -1,41 +1,37 @@
-drop table if exists users cascade;
-create table users(
-  id SERIAL,
-  name VARCHAR,
-  money INT,
+--CREATE TABLE IF NOT EXISTS users(
+--  id SERIAL,
+--  name VARCHAR,
+--  money INT,
+--
+--  PRIMARY KEY (id)
+--);
 
-  PRIMARY KEY (id)
-);
+--CREATE TYPE IF NOT EXISTS item_type as enum (
+--  'POKE_BALL',
+--  'GREAT_BALL',
+--  'ULTRA_BALL',
+--  'MASTER_BALL',
+--  'STARTER_BALL',
+--  'BOND_BALL',
+--  'POTION',
+--  'SUPER_POTION',
+--  'HYPER_POTION',
+--  'MAX_POTION',
+--  'REVIVE'
+--);
 
-drop type if exists item_type cascade;
-create type item_type as enum (
-  'POKE_BALL',
-  'GREAT_BALL',
-  'ULTRA_BALL',
-  'MASTER_BALL',
-  'STARTER_BALL',
-  'BOND_BALL',
-  'POTION',
-  'SUPER_POTION',
-  'HYPER_POTION',
-  'MAX_POTION',
-  'REVIVE'
-);
+--create table items(
+--  id SERIAL,
+--  item_type item_type,
+--  qty INT,
+--  owner_id INT,
+--
+--  PRIMARY KEY (id),
+--  FOREIGN KEY (owner_id) REFERENCES users (id),
+--  UNIQUE (item_type, owner_id)
+--);
 
-drop table if exists items cascade;
-create table items(
-  id SERIAL,
-  item_type item_type,
-  qty INT,
-  owner_id INT,
-
-  PRIMARY KEY (id),
-  FOREIGN KEY (owner_id) REFERENCES users (id),
-  UNIQUE (item_type, owner_id)
-);
-
-drop table if exists habitats cascade;
-create table habitats(
+CREATE TABLE IF NOT EXISTS habitats(
   id SERIAL,
   habitat_type VARCHAR,
   rarity FLOAT,
@@ -44,8 +40,7 @@ create table habitats(
   PRIMARY KEY (id)
 );
 
-drop table if exists pokemon cascade;
-create table pokemon(
+CREATE TABLE IF NOT EXISTS pokemon(
   id SERIAL,
   pokedex_id INTEGER,
   hp INTEGER,
@@ -57,8 +52,7 @@ create table pokemon(
   FOREIGN KEY (owner_id) REFERENCES users (id)
 );
 
-drop table if exists spawns cascade;
-create table spawns(
+CREATE TABLE IF NOT EXISTS spawns(
                      id SERIAL,
                      world_x DOUBLE PRECISION,
                      world_y DOUBLE PRECISION,
@@ -70,8 +64,7 @@ create table spawns(
                      FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)
 );
 
-drop table if exists visited_locations cascade;
-create table visited_locations(
+CREATE TABLE IF NOT EXISTS visited_locations(
   id SERIAL,
   tile_x INTEGER,
   tile_y INTEGER,

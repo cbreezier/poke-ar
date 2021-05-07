@@ -1,5 +1,3 @@
-INSERT INTO users (name, money) VALUES ('Ash Ketchum', 0);
-
 INSERT INTO habitats (habitat_type, rarity, pokedex_id) VALUES ('GRASS',10,1);
 INSERT INTO habitats (habitat_type, rarity, pokedex_id) VALUES ('NONE',0,2);
 INSERT INTO habitats (habitat_type, rarity, pokedex_id) VALUES ('NONE',0,3);
