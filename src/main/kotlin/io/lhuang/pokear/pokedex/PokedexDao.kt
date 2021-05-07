@@ -2,31 +2,36 @@ package io.lhuang.pokear.pokedex
 
 import io.lhuang.pokear.habitat.Habitat
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
 
 @Component
 class PokedexDao(
-        private val jdbcTemplate: JdbcTemplate,
-        private val pokedexRowMapper: PokedexRowMapper,
-        private val pokedexSpawnStatsRowMapper: PokedexSpawnStatsRowMapper
+        private val jdbcTemplate: JdbcTemplate
 ) {
-
-    fun getPokemon(): List<Pokedex> {
-        return jdbcTemplate.query("select id, name from pokedex", pokedexRowMapper)
-    }
 
     fun getPokemonSpawns(habitat: Habitat): List<PokedexSpawnStats> {
         return jdbcTemplate.query(
                 """
                     SELECT
-                        p.id,
-                        p.name,
+                        h.pokedex_id,
                         h.rarity
                     FROM habitats h
-                    JOIN pokedex p ON h.pokedex_id = p.id
                     WHERE h.habitat_type = '${habitat.name}' OR h.habitat_type = 'ANY'
                 """.trimIndent(),
                 pokedexSpawnStatsRowMapper
         )
+    }
+
+    companion object {
+        private val pokedexSpawnStatsRowMapper = RowMapper { rs, _ ->
+            val id = rs.getLong("pokedex_id")
+            val rarity = rs.getDouble("rarity")
+
+            PokedexSpawnStats(
+                    POKEDEX[id.toInt()] ?: error("No pokedex entry for $id"),
+                    rarity
+            )
+        }
     }
 }

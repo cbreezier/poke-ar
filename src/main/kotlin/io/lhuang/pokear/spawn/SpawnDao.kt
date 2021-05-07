@@ -39,15 +39,13 @@ class SpawnDao(
                 "s.world_y, " +
                 "s.start_timestamp, " +
                 "s.end_timestamp, " +
-                "dex.id as dex_id, " +
-                "dex.name, " +
+                "p.pokedex_id as dex_id, " +
                 "p.id as pokemon_id, " +
                 "p.hp, " +
                 "p.exp, " +
                 "p.bond_exp " +
                 "from spawns s " +
                 "join pokemon p on s.pokemon_id = p.id " +
-                "join pokedex dex on p.pokedex_id = dex.id " +
                 "where " +
                 "s.world_x > ${left} " +
                 "and s.world_x < ${right} " +

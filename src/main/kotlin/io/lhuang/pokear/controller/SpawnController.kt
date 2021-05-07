@@ -8,6 +8,7 @@ import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToMapPoint
 import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToTilePosition
 import io.lhuang.pokear.model.PokemonSpawnModel
 import io.lhuang.pokear.pokedex.PokedexDao
+import io.lhuang.pokear.pokedex.PokedexManager
 import io.lhuang.pokear.spawn.SpawnPoint
 import io.lhuang.pokear.spawn.SpawnService
 import org.springframework.http.ResponseEntity
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*
 class SpawnController(
         private val mapService: MapService,
         private val habitatService: HabitatService,
-        private val pokedexDao: PokedexDao,
+        private val pokedexManager: PokedexManager,
         private val spawnService: SpawnService
 ) {
 
@@ -35,7 +36,7 @@ class SpawnController(
 
         val terrain = habitatService.getTerrain(map, mapPoint)
         val habitats = habitatService.calculateHabitat(map, mapPoint)
-        val spawns = habitats.flatMap { pokedexDao.getPokemonSpawns(it) }
+        val spawns = habitats.flatMap { pokedexManager.getPokedexSpawnStats(it) }
 
         return SpawnPoint(latitude, longitude, terrain, habitats, spawns.sortedByDescending { it.spawnChance })
     }

@@ -2,6 +2,7 @@ package io.lhuang.pokear.pokemon
 
 import io.lhuang.pokear.map.MercatorProjection
 import io.lhuang.pokear.map.WorldPoint
+import io.lhuang.pokear.pokedex.POKEDEX
 import io.lhuang.pokear.pokedex.Pokedex
 import org.springframework.jdbc.core.RowMapper
 import org.springframework.stereotype.Component
@@ -14,7 +15,6 @@ class PokemonSpawnRowMapper : RowMapper<PokemonSpawn> {
         val dexId = rs.getLong("dex_id")
         val spawnId = rs.getLong("spawn_id")
         val pokemonId = rs.getLong("pokemon_id")
-        val name = rs.getString("name")
         val hp = rs.getInt("hp")
         val exp = rs.getInt("exp")
         val bondExp = rs.getInt("bond_exp")
@@ -30,7 +30,7 @@ class PokemonSpawnRowMapper : RowMapper<PokemonSpawn> {
                 spawnId,
                 Pokemon(
                         pokemonId,
-                        Pokedex(dexId, name),
+                        POKEDEX[dexId.toInt()] ?: error("No pokedex entry for $dexId"),
                         hp,
                         exp,
                         bondExp,

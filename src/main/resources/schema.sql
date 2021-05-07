@@ -34,14 +34,6 @@ create table items(
   UNIQUE (item_type, owner_id)
 );
 
-drop table if exists pokedex cascade;
-create table pokedex(
-  id SERIAL, -- Should be int, and manually set
-  name VARCHAR,
-
-  PRIMARY KEY (id)
-);
-
 drop table if exists habitats cascade;
 create table habitats(
   id SERIAL,
@@ -49,8 +41,7 @@ create table habitats(
   rarity FLOAT,
   pokedex_id INTEGER,
 
-  PRIMARY KEY (id),
-  FOREIGN KEY (pokedex_id) REFERENCES pokedex (id)
+  PRIMARY KEY (id)
 );
 
 drop table if exists pokemon cascade;
@@ -63,8 +54,7 @@ create table pokemon(
   owner_id INTEGER,
 
   PRIMARY KEY (id),
-  FOREIGN KEY (pokedex_id) REFERENCES pokedex (id),
-  FOREIGN KEY (owner_id) REFERENCES  users (id)
+  FOREIGN KEY (owner_id) REFERENCES users (id)
 );
 
 drop table if exists spawns cascade;

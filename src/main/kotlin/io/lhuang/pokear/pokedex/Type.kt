@@ -15,6 +15,8 @@ enum class Type {
     PSYCHIC,
     GHOST,
     POISON,
+    DRAGON,
     DARK,
-    STEEL
+    STEEL,
+    FAIRY
 }

@@ -9,6 +9,7 @@ import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
 import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToTilePosition
 import io.lhuang.pokear.map.TilePosition
 import io.lhuang.pokear.pokedex.PokedexDao
+import io.lhuang.pokear.pokedex.PokedexManager
 import io.lhuang.pokear.pokemon.Pokemon
 import io.lhuang.pokear.pokemon.PokemonSpawn
 import org.springframework.stereotype.Component
@@ -21,7 +22,7 @@ import kotlin.random.Random
 class SpawnService(
         val mapService: MapService,
         val habitatService: HabitatService,
-        val pokedexDao: PokedexDao,
+        val pokedexManager: PokedexManager,
         val spawnDao: SpawnDao
 ) {
     companion object {
@@ -63,7 +64,7 @@ class SpawnService(
                     ) // TODO hardcoded 512 needs to go somewhere
 
                     val spawnPoints = habitatService.calculateHabitat(map, mapPoint)
-                            .flatMap { pokedexDao.getPokemonSpawns(it) }
+                            .flatMap { pokedexManager.getPokedexSpawnStats(it) }
 
                     val pokedex = weightedRandomBy(spawnPoints) { it.spawnChance }?.pokedex
                     val startTime = Instant.now().plus(jitter(SPAWN_FREQUENCY))
