@@ -2,12 +2,9 @@ package io.lhuang.pokear.spawn
 
 import com.google.maps.model.LatLng
 import io.lhuang.pokear.habitat.HabitatService
-import io.lhuang.pokear.map.MapPoint
-import io.lhuang.pokear.map.MapService
-import io.lhuang.pokear.map.MercatorProjection
+import io.lhuang.pokear.map.*
 import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
 import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToTilePosition
-import io.lhuang.pokear.map.TilePosition
 import io.lhuang.pokear.pokedex.PokedexDao
 import io.lhuang.pokear.pokedex.PokedexManager
 import io.lhuang.pokear.pokemon.Pokemon
@@ -28,16 +25,6 @@ class SpawnService(
     companion object {
         const val SPAWN_FREQUENCY_MINUTES = 1L
         val SPAWN_FREQUENCY = Duration.ofMinutes(SPAWN_FREQUENCY_MINUTES)
-
-        // The width and height of a single map tile in terms of world coordinates
-        // Since the usable world coordinate space is {0, 0} to {256, 256}, a value of
-        // 0.0078125 gives us 32768 divisions, which is 2^15
-        //
-        // This represents a single tile width at zoom level 15.
-        //
-        // https://developers.google.com/maps/documentation/javascript/coordinates
-        private const val TILE_WIDTH = 0.0078125
-        private const val TILE_HEIGHT = 0.0078125
     }
 
     fun cleanupSpawns() {
@@ -45,7 +32,7 @@ class SpawnService(
     }
 
     fun getSpawns(center: LatLng): List<PokemonSpawn> {
-        return spawnDao.getSpawns(latLngToWorldPoint(center), TILE_WIDTH, TILE_HEIGHT, Instant.now())
+        return spawnDao.getSpawns(latLngToWorldPoint(center), TILE_WORLD_WIDTH * 3, TILE_WORLD_WIDTH * 3, Instant.now())
     }
 
     fun spawnPokemon(num: Int) {
