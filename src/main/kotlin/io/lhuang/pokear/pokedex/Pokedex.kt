@@ -12,22 +12,37 @@ data class Pokedex(
         val baseSpd: Int,
 
         val type1: Type,
-        val type2: Type?
+        val type2: Type?,
+
+        val growthType: GrowthType,
+        val baseExpGranted: Int,
+        val captureRate: Int
 ) {
+    public fun hpAt(level: Int): Int {
+        return interpolateStats(baseHp, level)
+    }
 
-    // TODO temporary standard stats until I put everything in the database
-    constructor(id: Long, name: String) : this(
-                id,
-                name,
+    public fun atkAt(level: Int): Int {
+        return interpolateStats(baseAtk, level)
+    }
 
-                100,
-                100,
-                100,
-                100,
-                100,
-                100,
+    public fun defAt(level: Int): Int {
+        return interpolateStats(baseDef, level)
+    }
 
-                Type.NORMAL,
-                null
-        )
+    public fun spAtkAt(level: Int): Int {
+        return interpolateStats(baseSpAtk, level)
+    }
+
+    public fun spDefAt(level: Int): Int {
+        return interpolateStats(baseSpDef, level)
+    }
+
+    public fun spdAt(level: Int): Int {
+        return interpolateStats(baseSpd, level)
+    }
+
+    private fun interpolateStats(stat: Int, level: Int): Int {
+        return (stat * (level.toDouble() / 100)).toInt()
+    }
 }

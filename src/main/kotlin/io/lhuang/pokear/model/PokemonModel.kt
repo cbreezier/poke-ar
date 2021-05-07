@@ -4,42 +4,58 @@ import io.lhuang.pokear.pokedex.Pokedex
 import io.lhuang.pokear.pokemon.Pokemon
 import io.lhuang.pokear.user.User
 
+/**
+ * The model to be serialized and returned to a client.
+ *
+ * Contains all of the final derived/calculated values instead of raw data.
+ */
 data class PokemonModel(
         val id: Long,
         val pokedex: Pokedex,
-        val hp: Int,
+        val nickname: String?,
+
         val level: Int,
         val exp: Int,
-        val bondLevel: Int,
         val bondExp: Int,
+
+        val currentHp: Int,
+
+        val hp: Int,
+        val atk: Int,
+        val def: Int,
+        val spAtk: Int,
+        val spDef: Int,
+        val spd: Int,
+
         val owner: User?
 ) {
-    constructor(pokemon: Pokemon) : this(
-            pokemon.id!!, // TODO how to handle this
-            pokemon.pokedex,
-            pokemon.hp,
-            rawExpToLevel(pokemon.pokedex, pokemon.exp),
-            rawExpToExp(pokemon.pokedex, pokemon.exp),
-            rawBondExpToBondLevel(pokemon.pokedex, pokemon.bondExp),
-            rawBondExpToBondExp(pokemon.pokedex, pokemon.bondExp),
-            pokemon.owner
-    )
 
     companion object {
-        private fun rawExpToLevel(pokedex: Pokedex, rawExp: Int): Int {
-            return rawExp // TODO
-        }
+        public fun fromPokemon(pokemon: Pokemon) : PokemonModel {
+            val pokedex = pokemon.pokedex
+            val level = pokedex.growthType.expToLevel(pokemon.exp)
+            val exp = pokemon.exp - pokedex.growthType.levelToExp(level)
 
-        private fun rawExpToExp(pokedex: Pokedex, rawExp: Int): Int {
-            return rawExp // TODO
-        }
+            return PokemonModel(
+                    pokemon.id,
+                    pokedex,
+                    pokemon.nickname,
 
-        private fun rawBondExpToBondLevel(pokedex: Pokedex, rawBondExp: Int): Int {
-            return rawBondExp // TODO
-        }
+                    level,
+                    exp,
+                    pokemon.bondExp,
 
-        private fun rawBondExpToBondExp(pokedex: Pokedex, rawBondExp: Int): Int {
-            return rawBondExp // TODO
+                    pokemon.hp,
+
+                    pokedex.hpAt(level),
+                    pokedex.atkAt(level),
+                    pokedex.defAt(level),
+                    pokedex.spAtkAt(level),
+                    pokedex.spDefAt(level),
+                    pokedex.spdAt(level),
+
+                    pokemon.owner
+            )
         }
     }
 }

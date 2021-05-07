@@ -10,7 +10,7 @@ data class PokemonSpawnModel(
 ) {
     constructor(pokemonSpawn: PokemonSpawn): this(
             pokemonSpawn.id!!,
-            PokemonModel(pokemonSpawn.pokemon),
+            PokemonModel.fromPokemon(pokemonSpawn.pokemon),
             pokemonSpawn.latitude,
             pokemonSpawn.longitude
     )

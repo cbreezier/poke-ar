@@ -57,14 +57,16 @@ class SpawnService(
                     val startTime = Instant.now().plus(jitter(SPAWN_FREQUENCY))
                     val endTime = startTime.plus(SPAWN_FREQUENCY)
                     val worldPoint = MercatorProjection.mapPointToWorldPoint(map, mapPoint)
+                    val level = Random.nextInt(100) // TODO vary based on region
 
                     if (pokedex != null) {
                         val pokemon = Pokemon(
-                                null,
+                                0,
                                 pokedex,
-                                100, // TODO
-                                Random.nextInt(100), // TODO
-                                Random.nextInt(100), // TODO
+                                null,
+                                pokedex.hpAt(level),
+                                pokedex.growthType.levelToExp(level),
+                                0,
                                 null
                         )
                         spawnDao.addSpawn(worldPoint, pokemon, startTime, endTime)

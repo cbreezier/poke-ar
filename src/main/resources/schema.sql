@@ -33,19 +33,19 @@
 
 CREATE TABLE IF NOT EXISTS habitats(
   id SERIAL,
-  habitat_type VARCHAR,
-  rarity FLOAT,
-  pokedex_id INTEGER,
+  habitat_type VARCHAR NOT NULL,
+  rarity FLOAT NOT NULL,
+  pokedex_id INTEGER NOT NULL,
 
   PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS pokemon(
   id SERIAL,
-  pokedex_id INTEGER,
-  hp INTEGER,
-  exp INTEGER,
-  bond_exp INTEGER,
+  pokedex_id INTEGER NOT NULL,
+  hp INTEGER NOT NULL,
+  exp INTEGER NOT NULL,
+  bond_exp INTEGER NOT NULL,
   owner_id INTEGER,
 
   PRIMARY KEY (id),
@@ -53,22 +53,22 @@ CREATE TABLE IF NOT EXISTS pokemon(
 );
 
 CREATE TABLE IF NOT EXISTS spawns(
-                     id SERIAL,
-                     world_x DOUBLE PRECISION,
-                     world_y DOUBLE PRECISION,
-                     pokemon_id INTEGER,
-                     start_timestamp BIGINT,
-                     end_timestamp BIGINT,
+  id SERIAL,
+  world_x DOUBLE PRECISION NOT NULL,
+  world_y DOUBLE PRECISION NOT NULL,
+  pokemon_id INTEGER NOT NULL,
+  start_timestamp BIGINT NOT NULL,
+  end_timestamp BIGINT NOT NULL,
 
-                     PRIMARY KEY (id),
-                     FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)
+  PRIMARY KEY (id),
+  FOREIGN KEY (pokemon_id) REFERENCES pokemon (id)
 );
 
 CREATE TABLE IF NOT EXISTS visited_locations(
   id SERIAL,
-  tile_x INTEGER,
-  tile_y INTEGER,
-  timestamp BIGINT,
+  tile_x INTEGER NOT NULL,
+  tile_y INTEGER NOT NULL,
+  timestamp BIGINT NOT NULL,
 
   PRIMARY KEY (id),
   UNIQUE (tile_x, tile_y)

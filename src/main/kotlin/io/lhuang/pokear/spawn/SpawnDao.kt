@@ -34,16 +34,8 @@ class SpawnDao(
         val top = worldPoint.y - height / 2
         val bottom = worldPoint.y + height / 2
         return jdbcTemplate.query("select " +
-                "s.id as spawn_id, " +
-                "s.world_x, " +
-                "s.world_y, " +
-                "s.start_timestamp, " +
-                "s.end_timestamp, " +
-                "p.pokedex_id as dex_id, " +
-                "p.id as pokemon_id, " +
-                "p.hp, " +
-                "p.exp, " +
-                "p.bond_exp " +
+                "s.*, " +
+                "p.* " +
                 "from spawns s " +
                 "join pokemon p on s.pokemon_id = p.id " +
                 "where " +
