@@ -2,7 +2,6 @@ package io.lhuang.pokear.model
 
 import io.lhuang.pokear.pokedex.Pokedex
 import io.lhuang.pokear.pokemon.Pokemon
-import io.lhuang.pokear.user.User
 
 /**
  * The model to be serialized and returned to a client.
@@ -27,7 +26,7 @@ data class PokemonModel(
         val spDef: Int,
         val spd: Int,
 
-        val owner: User?
+        val ownerId: Long?
 ) {
 
     companion object {
@@ -54,7 +53,7 @@ data class PokemonModel(
                     pokedex.spDefAt(level),
                     pokedex.spdAt(level),
 
-                    pokemon.owner
+                    pokemon.owner?.id
             )
         }
     }

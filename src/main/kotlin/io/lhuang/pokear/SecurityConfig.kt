@@ -19,7 +19,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .authorizeRequests {
                     it
                             .antMatchers(
-                                    "/", // TODO decide what we actually want to allow
+                                    "/login.html",
                                     "/error",
                                     "/webjars/**"
                             ).permitAll()
@@ -29,7 +29,7 @@ class SecurityConfig : WebSecurityConfigurerAdapter() {
                 .exceptionHandling { e ->
                     // TODO return 403 for rest apis and redirect for html files
                     // e.authenticationEntryPoint(HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
-                    e.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/oauth2/authorization/github"))
+                    e.authenticationEntryPoint(LoginUrlAuthenticationEntryPoint("/login.html"))
                 }
                 .oauth2Login()
     }

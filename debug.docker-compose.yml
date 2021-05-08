@@ -11,6 +11,8 @@ services:
       - MAPS_API_KEY
       - GITHUB_OAUTH_CLIENT_ID
       - GITHUB_OAUTH_SECRET
+      - GOOGLE_OAUTH_CLIENT_ID
+      - GOOGLE_OAUTH_SECRET
     ports:
       - "${HOST_PORT:-9002}:8080"
       - "6005:5005"
