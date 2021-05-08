@@ -52,7 +52,7 @@ class SpawnService(
                     val spawnPoints = habitatService.calculateHabitat(map, mapPoint)
                             .flatMap { pokedexManager.getPokedexSpawnStats(it) }
 
-                    val pokedex = weightedRandomBy(spawnPoints) { it.spawnChance }?.pokedex
+                    val pokedex = weightedRandomByPercent(spawnPoints) { it.spawnChance }?.pokedex
                     val startTime = Instant.now().plus(jitter(SPAWN_FREQUENCY))
                     val endTime = startTime.plus(SPAWN_FREQUENCY)
                     val worldPoint = MercatorProjection.mapPointToWorldPoint(map, mapPoint)
@@ -86,7 +86,11 @@ class SpawnService(
                 .map { MercatorProjection.worldPointToLatLng(it) }
     }
 
-    private fun <T> weightedRandomBy(inputs: List<T>, by: (T) -> Double): T? {
+    /**
+     * Given a list of inputs and the percentage change of those things happening,
+     * randomly choose one of the inputs (or none!)
+     */
+    private fun <T> weightedRandomByPercent(inputs: List<T>, by: (T) -> Double): T? {
         if (inputs.isEmpty()) {
             return null
         }
