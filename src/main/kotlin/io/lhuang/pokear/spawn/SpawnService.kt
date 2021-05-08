@@ -5,7 +5,6 @@ import io.lhuang.pokear.habitat.HabitatService
 import io.lhuang.pokear.map.*
 import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
 import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToTilePosition
-import io.lhuang.pokear.pokedex.PokedexDao
 import io.lhuang.pokear.pokedex.PokedexManager
 import io.lhuang.pokear.pokemon.Pokemon
 import io.lhuang.pokear.pokemon.PokemonSpawn
@@ -46,9 +45,9 @@ class SpawnService(
         (0..num).toList()
                 .forEach {
                     val mapPoint = MapPoint(
-                            Random.nextInt(0, 512),
-                            Random.nextInt(0, 512)
-                    ) // TODO hardcoded 512 needs to go somewhere
+                            Random.nextInt(0, TILE_PIXEL_WIDTH),
+                            Random.nextInt(0, TILE_PIXEL_WIDTH)
+                    )
 
                     val spawnPoints = habitatService.calculateHabitat(map, mapPoint)
                             .flatMap { pokedexManager.getPokedexSpawnStats(it) }
@@ -57,7 +56,7 @@ class SpawnService(
                     val startTime = Instant.now().plus(jitter(SPAWN_FREQUENCY))
                     val endTime = startTime.plus(SPAWN_FREQUENCY)
                     val worldPoint = MercatorProjection.mapPointToWorldPoint(map, mapPoint)
-                    val level = Random.nextInt(100) // TODO vary based on region
+                    val level = Random.nextInt(map.region.minLevel, map.region.maxLevel)
 
                     if (pokedex != null) {
                         val pokemon = Pokemon(

@@ -1,23 +1,25 @@
 package io.lhuang.pokear.map
 
-import com.google.maps.GeoApiContext
-import com.google.maps.PlacesApi
-import com.google.maps.StaticMapsApi
-import com.google.maps.StaticMapsRequest
+import com.google.maps.*
+import com.google.maps.model.AddressComponentType
+import com.google.maps.model.GeocodingResult
 import com.google.maps.model.LatLng
 import com.google.maps.model.Size
 import io.lhuang.pokear.map.MercatorProjection.Companion.tilePositionToWorldPoint
 import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToLatLng
+import io.lhuang.pokear.spawn.RegionManager
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.io.ByteArrayInputStream
 import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
 import kotlin.math.cos
-import kotlin.math.pow
 
 @Component
-class MapService {
+class MapService(
+        @Autowired private val regionManager: RegionManager
+) {
 
     @Value("\${maps.apiKey}")
     private lateinit var apiKey: String
@@ -69,11 +71,21 @@ class MapService {
                 .map { Pair(it, getNearby(latLng, it.searchTerm, metersRadius.toInt())) }
                 .toMap()
 
+        // Get the region of a map tile
+        val geocodingResult = GeocodingApi.reverseGeocode(apiContext.value, latLng)
+                .await()
+        val postcode = getPostcode(geocodingResult)
+        val regionName = getRegionName(geocodingResult)
+        val country = getCountry(geocodingResult)
+
+        val region = regionManager.getRegion(postcode, regionName, country)
+
         return MapTile(
                 position,
                 TILE_ZOOM_LEVEL + 1,
                 image,
-                places
+                places,
+                region
         )
     }
 
@@ -88,5 +100,26 @@ class MapService {
         return searchResults
                 .map { it.geometry.location }
                 .toList()
+    }
+
+    private fun getPostcode(geocodingResults: Array<GeocodingResult>): String {
+        return geocodingResults.firstOrNull()?.addressComponents
+                ?.firstOrNull { it.types.contains(AddressComponentType.POSTAL_CODE) }
+                ?.longName
+                ?: "unknown"
+    }
+
+    private fun getRegionName(geocodingResults: Array<GeocodingResult>): String {
+        return geocodingResults.firstOrNull()?.addressComponents
+                ?.firstOrNull { it.types.contains(AddressComponentType.LOCALITY) }
+                ?.longName
+                ?: "unknown"
+    }
+
+    private fun getCountry(geocodingResults: Array<GeocodingResult>): String {
+        return geocodingResults.firstOrNull()?.addressComponents
+                ?.firstOrNull { it.types.contains(AddressComponentType.COUNTRY) }
+                ?.longName
+                ?: "unknown"
     }
 }

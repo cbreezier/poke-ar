@@ -1,6 +1,7 @@
 package io.lhuang.pokear.map
 
 import com.google.maps.model.LatLng
+import io.lhuang.pokear.spawn.Region
 import java.awt.image.BufferedImage
 
 /**
@@ -11,5 +12,6 @@ data class MapTile(
         val position: TilePosition,
         val zoom: Int,
         val imageData: BufferedImage,
-        val places: Map<PointOfInterest, List<LatLng>>
+        val places: Map<PointOfInterest, List<LatLng>>,
+        val region: Region
 )
