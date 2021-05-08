@@ -97,12 +97,13 @@ class SpawnDao(
         return jdbcTemplate.query("select tile_x, tile_y from visited_locations", tilePositionRowMapper)
     }
 
-    fun getRegion(postcode: String, country: String): Region? {
+    fun getRegion(locality: String, state: String, country: String): Region? {
         return try {
             jdbcTemplate.queryForObject(
-                    "select * from regions where postcode = :postcode and country = :country",
+                    "select * from regions where locality = :locality and state = :state and country = :country",
                     mapOf(
-                            "postcode" to postcode,
+                            "locality" to locality,
+                            "state" to state,
                             "country" to country
                     ),
                     regionRowMapper
@@ -114,11 +115,11 @@ class SpawnDao(
 
     fun addRegion(region: Region): Region {
         jdbcTemplate.update(
-                "insert into regions(postcode, name, country, min_level, max_level, generation, gym_type) " +
-                        "values(:postcode, :name, :country, :min_level, :max_level, :generation, :gym_type)",
+                "insert into regions(locality, state, country, min_level, max_level, generation, gym_type) " +
+                        "values(:locality, :state, :country, :min_level, :max_level, :generation, :gym_type)",
                 mapOf(
-                        "postcode" to region.postcode,
-                        "name" to region.name,
+                        "locality" to region.locality,
+                        "state" to region.state,
                         "country" to region.country,
                         "min_level" to region.minLevel,
                         "max_level" to region.maxLevel,
@@ -134,8 +135,8 @@ class SpawnDao(
         val regionRowMapper = RowMapper { rs: ResultSet, _: Int ->
             val resultSet = NamespacedResultSet(rs)
             Region(
-                    resultSet.getString("regions.postcode"),
-                    resultSet.getString("regions.name"),
+                    resultSet.getString("regions.locality"),
+                    resultSet.getString("regions.state"),
                     resultSet.getString("regions.country"),
                     resultSet.getInt("regions.min_level"),
                     resultSet.getInt("regions.max_level"),

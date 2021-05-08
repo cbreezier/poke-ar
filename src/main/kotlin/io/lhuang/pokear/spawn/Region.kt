@@ -4,8 +4,8 @@ import io.lhuang.pokear.pokedex.Type
 import kotlin.random.Random
 
 data class Region(
-        val postcode: String,
-        val name: String,
+        val locality: String,
+        val state: String,
         val country: String,
         val minLevel: Int,
         val maxLevel: Int,
@@ -13,12 +13,12 @@ data class Region(
         val gymType: Type
 ) {
     companion object {
-        fun random(postcode: String, name: String, country: String): Region {
+        fun random(locality: String, state: String, country: String): Region {
             val minLevel = Random.nextInt(0, 10) * 10
             val maxLevel = minLevel + 10
             return Region(
-                    postcode,
-                    name,
+                    locality,
+                    state,
                     country,
                     minLevel,
                     maxLevel,

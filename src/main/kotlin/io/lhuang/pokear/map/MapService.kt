@@ -74,11 +74,11 @@ class MapService(
         // Get the region of a map tile
         val geocodingResult = GeocodingApi.reverseGeocode(apiContext.value, latLng)
                 .await()
-        val postcode = getPostcode(geocodingResult)
-        val regionName = getRegionName(geocodingResult)
+        val locality = getLocality(geocodingResult)
+        val state = getState(geocodingResult)
         val country = getCountry(geocodingResult)
 
-        val region = regionManager.getRegion(postcode, regionName, country)
+        val region = regionManager.getRegion(locality, state, country)
 
         return MapTile(
                 position,
@@ -102,16 +102,16 @@ class MapService(
                 .toList()
     }
 
-    private fun getPostcode(geocodingResults: Array<GeocodingResult>): String {
+    private fun getLocality(geocodingResults: Array<GeocodingResult>): String {
         return geocodingResults.firstOrNull()?.addressComponents
-                ?.firstOrNull { it.types.contains(AddressComponentType.POSTAL_CODE) }
+                ?.firstOrNull { it.types.contains(AddressComponentType.LOCALITY) }
                 ?.longName
                 ?: "unknown"
     }
 
-    private fun getRegionName(geocodingResults: Array<GeocodingResult>): String {
+    private fun getState(geocodingResults: Array<GeocodingResult>): String {
         return geocodingResults.firstOrNull()?.addressComponents
-                ?.firstOrNull { it.types.contains(AddressComponentType.LOCALITY) }
+                ?.firstOrNull { it.types.contains(AddressComponentType.ADMINISTRATIVE_AREA_LEVEL_1) }
                 ?.longName
                 ?: "unknown"
     }

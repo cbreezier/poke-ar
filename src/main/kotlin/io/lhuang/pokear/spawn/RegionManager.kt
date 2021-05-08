@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component
 class RegionManager(
         @Autowired val spawnDao: SpawnDao
 ) {
-    fun getRegion(postcode: String, name: String, country: String): Region {
-        val existingRegion = spawnDao.getRegion(postcode, country)
-        return existingRegion ?: spawnDao.addRegion(Region.random(postcode, name, country))
+    fun getRegion(locality: String, state: String, country: String): Region {
+        val existingRegion = spawnDao.getRegion(locality, state, country)
+        return existingRegion ?: spawnDao.addRegion(Region.random(locality, state, country))
     }
 }
