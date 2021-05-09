@@ -14,6 +14,10 @@ class PokemonManager(
         return pokemonDao.getPokemon(id)
     }
 
+    fun getPokemonByOwner(user: UserModel): List<Pokemon> {
+        return pokemonDao.getPokemonByOwner(user)
+    }
+
     fun catchPokemon(user: UserModel, id: Long): Pokemon? {
         return pokemonDao.catchPokemon(user, id)
     }

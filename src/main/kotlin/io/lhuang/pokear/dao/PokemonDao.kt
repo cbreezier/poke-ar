@@ -24,6 +24,14 @@ class PokemonDao(
         }
     }
 
+    fun getPokemonByOwner(user: UserModel): List<Pokemon> {
+        return jdbcTemplate.query(
+                "select * from pokemon where owner_id = :owner_id",
+                mapOf("owner_id" to user.id),
+                rowMappers.pokemonRowMapper
+        )
+    }
+
     fun catchPokemon(user: UserModel, id: Long): Pokemon? {
         jdbcTemplate.update(
                 "update pokemon set owner_id = :owner_id where id = :id",

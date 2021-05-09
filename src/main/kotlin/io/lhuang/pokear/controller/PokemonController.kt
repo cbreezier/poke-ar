@@ -17,8 +17,17 @@ class PokemonController(
         @Autowired private val userManager: UserManager,
         @Autowired private val pokemonManager: PokemonManager
 ) {
-    @GetMapping("/{pokemonId}")
+    @GetMapping
     fun getPokemon(
+            @AuthenticationPrincipal oAuth2User: OAuth2User
+    ): List<PokemonModel> {
+        val user = userManager.getUserByOauthName(oAuth2User.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User not registered")
+
+        return pokemonManager.getPokemonByOwner(user).map { PokemonModel.fromPokemon(it) }
+    }
+
+    @GetMapping("/{pokemonId}")
+    fun getPokemonById(
             @PathVariable("pokemonId") pokemonId: Long
     ): PokemonModel {
         return pokemonManager.getPokemon(pokemonId)?.let {
