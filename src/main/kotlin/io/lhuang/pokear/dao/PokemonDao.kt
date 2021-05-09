@@ -15,7 +15,7 @@ class PokemonDao(
     fun getPokemon(id: Long): Pokemon? {
         return try {
             jdbcTemplate.queryForObject(
-                    "select * from pokemon p join users u on u.id = p.owner_id where p.id = :id",
+                    "select * from pokemon p left join users u on u.id = p.owner_id where p.id = :id",
                     mapOf("id" to id),
                     rowMappers.pokemonRowMapper
             )
@@ -26,18 +26,19 @@ class PokemonDao(
 
     fun getPokemonByOwner(user: UserModel): List<Pokemon> {
         return jdbcTemplate.query(
-                "select * from pokemon where owner_id = :owner_id",
+                "select * from pokemon p join users u on u.id = p.owner_id where owner_id = :owner_id",
                 mapOf("owner_id" to user.id),
                 rowMappers.pokemonRowMapper
         )
     }
 
-    fun catchPokemon(user: UserModel, id: Long): Pokemon? {
+    fun catchPokemon(user: UserModel, id: Long, bondExpBonus: Int): Pokemon? {
         jdbcTemplate.update(
-                "update pokemon set owner_id = :owner_id where id = :id",
+                "update pokemon set owner_id = :owner_id, bond_exp = :bond_exp where id = :id and owner_id is null",
                 mapOf(
                         "id" to id,
-                        "owner_id" to user.id
+                        "owner_id" to user.id,
+                        "bond_exp" to bondExpBonus
                 )
         )
 

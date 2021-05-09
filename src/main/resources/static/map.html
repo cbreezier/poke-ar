@@ -180,7 +180,7 @@
             console.log(result);
           }
         };
-        xmlHttp.open("POST", "../api/v1/pokemon/" + pokemonId + "/catch", true); // true for asynchronous
+        xmlHttp.open("POST", "../api/v1/pokemon/" + pokemonId + "/catch?pokeballType=BOND_BALL", true); // true for asynchronous
         xmlHttp.send(null);
       }
     </script>

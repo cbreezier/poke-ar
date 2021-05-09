@@ -1,6 +1,7 @@
 package io.lhuang.pokear.controller
 
 import io.lhuang.pokear.battle.CatchResult
+import io.lhuang.pokear.item.PokeballType
 import io.lhuang.pokear.manager.PokemonManager
 import io.lhuang.pokear.manager.UserManager
 import io.lhuang.pokear.model.PokemonModel
@@ -38,13 +39,12 @@ class PokemonController(
     @PostMapping("/{pokemonId}/catch")
     fun catchPokemon(
             @AuthenticationPrincipal oAuth2User: OAuth2User,
-            @PathVariable("pokemonId") pokemonId: Long
+            @PathVariable("pokemonId") pokemonId: Long,
+            @RequestParam("pokeballType") pokeballType: PokeballType
     ): CatchResult {
         val user = userManager.getUserByOauthName(oAuth2User.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User not registered")
 
-        // TODO chance to fail?
-        // TODO consume an item?
-        pokemonManager.catchPokemon(user, pokemonId)
-        return CatchResult(true)
+        val success = pokemonManager.catchPokemon(user, pokeballType, pokemonId)
+        return CatchResult(success)
     }
 }
