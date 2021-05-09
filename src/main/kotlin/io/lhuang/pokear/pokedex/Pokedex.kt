@@ -18,28 +18,28 @@ data class Pokedex(
         val baseExpGranted: Int,
         val captureRate: Int
 ) {
-    public fun hpAt(level: Int): Int {
-        return interpolateStats(baseHp, level)
+    fun hpAt(level: Int): Int {
+        return interpolateStats(baseHp * 2, level) + level + 10
     }
 
-    public fun atkAt(level: Int): Int {
-        return interpolateStats(baseAtk, level)
+    fun atkAt(level: Int): Int {
+        return interpolateStats(baseAtk * 2, level) + 5
     }
 
-    public fun defAt(level: Int): Int {
-        return interpolateStats(baseDef, level)
+    fun defAt(level: Int): Int {
+        return interpolateStats(baseDef * 2, level) + 5
     }
 
-    public fun spAtkAt(level: Int): Int {
-        return interpolateStats(baseSpAtk, level)
+    fun spAtkAt(level: Int): Int {
+        return interpolateStats(baseSpAtk * 2, level) + 5
     }
 
-    public fun spDefAt(level: Int): Int {
-        return interpolateStats(baseSpDef, level)
+    fun spDefAt(level: Int): Int {
+        return interpolateStats(baseSpDef * 2, level) + 5
     }
 
-    public fun spdAt(level: Int): Int {
-        return interpolateStats(baseSpd, level)
+    fun spdAt(level: Int): Int {
+        return interpolateStats(baseSpd * 2, level) + 5
     }
 
     private fun interpolateStats(stat: Int, level: Int): Int {

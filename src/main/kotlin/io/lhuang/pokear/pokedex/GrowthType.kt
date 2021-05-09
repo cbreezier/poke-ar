@@ -13,7 +13,7 @@ enum class GrowthType {
     public fun expToLevel(exp: Int): Int {
         val expTable = getExpTable()
 
-        return expTable.filter { it < exp }.lastIndex
+        return expTable.filter { it <= exp }.lastIndex
     }
 
     public fun levelToExp(level: Int): Int {
