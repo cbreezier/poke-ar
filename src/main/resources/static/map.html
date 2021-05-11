@@ -117,8 +117,9 @@
               spawnMarkers.push(marker);
 
               // add info window
+              var catchButton = '<button onClick="catchPokemon(' + spawn.pokemon.id + ')">Catch!</button>';
               var infoWindow = new google.maps.InfoWindow({
-                content: '<button onClick="catchPokemon(' + spawn.pokemon.id + ')">Catch!</button>'
+                content: '<div><pre>' + JSON.stringify(spawn.pokemon, null, 2) + '</pre>' + catchButton + '</div>'
               });
               marker.addListener('click', function() {
                 infoWindow.open(map, marker);
