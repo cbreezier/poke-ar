@@ -2,6 +2,7 @@ package io.lhuang.pokear.controller
 
 import com.google.maps.model.LatLng
 import io.lhuang.pokear.habitat.HabitatService
+import io.lhuang.pokear.manager.UserManager
 import io.lhuang.pokear.map.MapService
 import io.lhuang.pokear.map.MercatorProjection.Companion.latLngToWorldPoint
 import io.lhuang.pokear.map.MercatorProjection.Companion.worldPointToMapPoint
@@ -12,11 +13,15 @@ import io.lhuang.pokear.pokedex.PokedexManager
 import io.lhuang.pokear.spawn.SpawnPoint
 import io.lhuang.pokear.spawn.SpawnService
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.web.bind.annotation.*
+import java.security.Principal
 
 @RestController
 @RequestMapping("/spawns")
+@Deprecated("These APIs are non-final and should be treated as deprecated and liable to change")
 class SpawnController(
+        private val userManager: UserManager,
         private val mapService: MapService,
         private val habitatService: HabitatService,
         private val pokedexManager: PokedexManager,
@@ -25,9 +30,12 @@ class SpawnController(
 
     @GetMapping("/info")
     fun getSpawnInfo(
+            @AuthenticationPrincipal principal: Principal,
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
     ): SpawnPoint {
+        getUserOrThrow(userManager, principal)
+
         val latLng = LatLng(latitude, longitude)
         val worldPoint = latLngToWorldPoint(latLng)
         val tilePosition = worldPointToTilePosition(worldPoint)
@@ -43,9 +51,12 @@ class SpawnController(
 
     @GetMapping
     fun getSpawns(
+            @AuthenticationPrincipal principal: Principal,
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
     ): List<PokemonSpawnModel> {
+        getUserOrThrow(userManager, principal)
+
         val center = LatLng(latitude, longitude)
 
         return spawnService.getSpawns(center)
@@ -54,9 +65,13 @@ class SpawnController(
 
     @PostMapping
     fun spawnPokemon(
+            @AuthenticationPrincipal principal: Principal,
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
     ): ResponseEntity<Void> {
+        // TODO this is a debug/admin feature - should be disabled for normal users
+        getUserOrThrow(userManager, principal)
+
         val latLng = LatLng(latitude, longitude)
         val worldPoint = latLngToWorldPoint(latLng)
         val tilePosition = worldPointToTilePosition(worldPoint)
@@ -68,9 +83,13 @@ class SpawnController(
 
     @PostMapping("/visit")
     fun visitLocation(
+            @AuthenticationPrincipal principal: Principal,
             @RequestParam(value = "lat") latitude: Double,
             @RequestParam(value = "lng") longitude: Double
     ): ResponseEntity<Void> {
+        // TODO record movement against the actual user
+        getUserOrThrow(userManager, principal)
+
         val location = LatLng(latitude, longitude)
 
         spawnService.visitLocation(location)
@@ -79,7 +98,12 @@ class SpawnController(
     }
 
     @GetMapping("/visited")
-    fun getVisitedLocations(): List<LatLng> {
+    fun getVisitedLocations(
+            @AuthenticationPrincipal principal: Principal
+    ): List<LatLng> {
+        // TODO this is a debug/admin feature - should be disabled for normal users
+        getUserOrThrow(userManager, principal)
+
         return spawnService.getVisitedLocations()
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -17,16 +18,21 @@ class UserController(
 ) {
     @GetMapping("/me")
     fun me(
-            @AuthenticationPrincipal oAuth2User: OAuth2User
+            @AuthenticationPrincipal principal: Principal
     ): UserModel {
-        return userManager.getUserByOauthName(oAuth2User.name) ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        return getUserOrThrow(userManager, principal)
     }
 
     @PostMapping("/register")
     fun register(
-            @AuthenticationPrincipal oAuth2User: OAuth2User,
+            @AuthenticationPrincipal principal: Principal,
             @RequestBody userRegistration: UserRegistration
     ): UserModel {
-        return userManager.registerUser(userRegistration, oAuth2User.name) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
+        val user = userManager.getUserByOauthName(principal.name)
+        if (user != null) {
+            throw ResponseStatusException(HttpStatus.CONFLICT, "User already registered")
+        }
+
+        return userManager.registerUser(userRegistration, principal.name) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR)
     }
 }

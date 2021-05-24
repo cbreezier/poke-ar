@@ -25,6 +25,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 
 	implementation("org.postgresql:postgresql")
 	implementation("com.google.maps:google-maps-services:0.10.1")

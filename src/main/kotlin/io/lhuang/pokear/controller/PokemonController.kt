@@ -8,9 +8,9 @@ import io.lhuang.pokear.model.PokemonModel
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
+import java.security.Principal
 
 @RestController
 @RequestMapping("/api/v1/pokemon")
@@ -20,17 +20,20 @@ class PokemonController(
 ) {
     @GetMapping
     fun getPokemon(
-            @AuthenticationPrincipal oAuth2User: OAuth2User
+            @AuthenticationPrincipal principal: Principal
     ): List<PokemonModel> {
-        val user = userManager.getUserByOauthName(oAuth2User.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User not registered")
+        val user = getUserOrThrow(userManager, principal)
 
         return pokemonManager.getPokemonByOwner(user).map { PokemonModel.fromPokemon(it) }
     }
 
     @GetMapping("/{pokemonId}")
     fun getPokemonById(
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable("pokemonId") pokemonId: Long
     ): PokemonModel {
+        getUserOrThrow(userManager, principal)
+
         return pokemonManager.getPokemon(pokemonId)?.let {
             PokemonModel.fromPokemon(it)
         } ?: throw ResponseStatusException(HttpStatus.NOT_FOUND)
@@ -38,11 +41,11 @@ class PokemonController(
 
     @PostMapping("/{pokemonId}/catch")
     fun catchPokemon(
-            @AuthenticationPrincipal oAuth2User: OAuth2User,
+            @AuthenticationPrincipal principal: Principal,
             @PathVariable("pokemonId") pokemonId: Long,
             @RequestParam("pokeballType") pokeballType: PokeballType
     ): CatchResult {
-        val user = userManager.getUserByOauthName(oAuth2User.name) ?: throw ResponseStatusException(HttpStatus.FORBIDDEN, "User not registered")
+        val user = getUserOrThrow(userManager, principal)
 
         val success = pokemonManager.catchPokemon(user, pokeballType, pokemonId)
         return CatchResult(success)
